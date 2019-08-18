@@ -1,0 +1,40 @@
+name: vnfname
+virtual_links:
+- name: worknet
+- name: mgmt_net
+  is_management: true
+vdus:
+- name: vdu1
+  vcpus: 1
+  memory: 512
+  disk_size: 120
+  image: F5_BIGIP-13.1.0.2.0.0.6
+  high_availability: ActiveActive
+  constraints:
+    dedicated: true
+    vim_id: OpenStack
+  scale_in_out:
+    minimum: 1
+    maximum: 4
+    default: 1
+  vnfcs:
+  - name: activeF5
+    connection_points:
+    - name: mgmtCP
+      ip_address: 169.20.128.151
+      virtualLinkReference:
+      - mgmt_net
+    - name: internalCP
+      ip_address: 10.18.121.151
+      virtualLinkReference:
+      - worknet
+  - name: passiveF5
+    connection_points:
+    - name: mgmtCP
+      ip_address: 169.20.128.151
+      virtualLinkReference:
+      - mgmt_net
+    - name: internalCP
+      ip_address: 10.18.121.151
+      virtualLinkReference:
+      - worknet

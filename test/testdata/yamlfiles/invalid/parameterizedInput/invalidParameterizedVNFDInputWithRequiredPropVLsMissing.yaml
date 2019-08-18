@@ -1,0 +1,36 @@
+name: vnfname
+vdus:
+  - name: vdu1
+    vcpus: $vcpus
+    memory: $memory
+    disk_size: $disk_size
+    image: $image
+    high_availability: $haval
+    constraints:
+      dedicated: $dedval
+      vim_id: $vimval
+    scale_in_out:
+      minimum: $min
+      maximum: $max
+      default: $def
+    vnfcs:
+      - name: activeF5
+        connection_points:
+          - name: mgmtCP
+            ip_address: $vdu1_vnfc1_mgmt
+            virtualLinkReference:
+              - mgmt_net
+          - name: internalCP
+            ip_address: $vdu1_work_net
+            virtualLinkReference:
+              - worknet
+      - name: passiveF5
+        connection_points:
+          - name: mgmtCP
+            ip_address: $vdu1_vnfc1_mgmt
+            virtualLinkReference:
+              - mgmt_net
+          - name: internalCP
+            ip_address: $vdu1_work_net
+            virtualLinkReference:
+              - worknet

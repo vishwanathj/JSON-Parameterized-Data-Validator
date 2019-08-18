@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.0 r1840935">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="PostVNFDRuntimeCSV" enabled="true">
+      <stringProp name="TestPlan.comments"></stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.tearDown_on_shutdown">true</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+      <stringProp name="TestPlan.user_define_classpath"></stringProp>
+    </TestPlan>
+    <hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">75</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">2</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
+          <stringProp name="filename">vnfdinput.txt</stringProp>
+          <stringProp name="fileEncoding"></stringProp>
+          <stringProp name="variableNames">vnfdname</stringProp>
+          <boolProp name="ignoreFirstLine">false</boolProp>
+          <stringProp name="delimiter">,</stringProp>
+          <boolProp name="quotedData">false</boolProp>
+          <boolProp name="recycle">true</boolProp>
+          <boolProp name="stopThread">false</boolProp>
+          <stringProp name="shareMode">shareMode.all</stringProp>
+        </CSVDataSet>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="PostVnfd" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+  &quot;virtual_links&quot;: [&#xd;
+    {&#xd;
+      &quot;name&quot;: &quot;worknet&quot;&#xd;
+    }, &#xd;
+    {&#xd;
+      &quot;name&quot;: &quot;mgmt_net&quot;, &#xd;
+      &quot;is_management&quot;: true&#xd;
+    }&#xd;
+  ], &#xd;
+  &quot;name&quot;: &quot;${vnfdname}&quot;, &#xd;
+  &quot;vdus&quot;: [&#xd;
+    {&#xd;
+      &quot;disk_size&quot;: &quot;$disk_size&quot;, &#xd;
+      &quot;name&quot;: &quot;vdu1&quot;, &#xd;
+      &quot;image&quot;: &quot;$image&quot;, &#xd;
+      &quot;vcpus&quot;: &quot;$vcpus&quot;, &#xd;
+      &quot;memory&quot;: &quot;$memory&quot;, &#xd;
+      &quot;vnfcs&quot;: [&#xd;
+        {&#xd;
+          &quot;connection_points&quot;: [&#xd;
+            {&#xd;
+              &quot;virtualLinkReference&quot;: [&#xd;
+                &quot;mgmt_net&quot;&#xd;
+              ], &#xd;
+              &quot;ip_address&quot;: &quot;$vdu1_vnfc1_mgmt&quot;, &#xd;
+              &quot;name&quot;: &quot;mgmtCP&quot;&#xd;
+            }, &#xd;
+            {&#xd;
+              &quot;virtualLinkReference&quot;: [&#xd;
+                &quot;worknet&quot;&#xd;
+              ], &#xd;
+              &quot;ip_address&quot;: &quot;$vdu1_work_net&quot;, &#xd;
+              &quot;name&quot;: &quot;internalCP&quot;&#xd;
+            }&#xd;
+          ], &#xd;
+          &quot;name&quot;: &quot;activeF5&quot;&#xd;
+        }, &#xd;
+        {&#xd;
+          &quot;connection_points&quot;: [&#xd;
+            {&#xd;
+              &quot;virtualLinkReference&quot;: [&#xd;
+                &quot;mgmt_net&quot;&#xd;
+              ], &#xd;
+              &quot;ip_address&quot;: &quot;$vdu1_vnfc1_mgmt&quot;, &#xd;
+              &quot;name&quot;: &quot;mgmtCP&quot;&#xd;
+            }, &#xd;
+            {&#xd;
+              &quot;virtualLinkReference&quot;: [&#xd;
+                &quot;worknet&quot;&#xd;
+              ], &#xd;
+              &quot;ip_address&quot;: &quot;$vdu1_work_net&quot;, &#xd;
+              &quot;name&quot;: &quot;internalCP&quot;&#xd;
+            }&#xd;
+          ], &#xd;
+          &quot;name&quot;: &quot;passiveF5&quot;&#xd;
+        }&#xd;
+      ], &#xd;
+      &quot;high_availability&quot;: &quot;$haval&quot;, &#xd;
+      &quot;scale_in_out&quot;: {&#xd;
+        &quot;default&quot;: &quot;$def&quot;, &#xd;
+        &quot;minimum&quot;: &quot;$min&quot;, &#xd;
+        &quot;maximum&quot;: &quot;$max&quot;&#xd;
+      }, &#xd;
+      &quot;constraints&quot;: {&#xd;
+        &quot;dedicated&quot;: &quot;$dedval&quot;, &#xd;
+        &quot;vim_id&quot;: &quot;$vimval&quot;&#xd;
+      }&#xd;
+    }&#xd;
+  ]&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">vnfdservice</stringProp>
+          <stringProp name="HTTPSampler.port">8080</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">vnfds</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+      </hashTree>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>
