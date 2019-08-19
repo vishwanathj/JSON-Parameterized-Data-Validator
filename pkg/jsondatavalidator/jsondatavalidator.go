@@ -3,7 +3,6 @@ package jsondatavalidator
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
@@ -170,6 +169,7 @@ func GetSchemaDefinitionFileAsJSONBuf(schemaFileName string) ([]byte, error) {
 	return yamlText, err
 }
 
+/* KEEP CODE TILL JUN 2019
 // ValidateVnfdPostBody validates the given JSON body against the parameterized
 // VNFD Input JSON schema "parameterizedVnfdInputSchema.json" for compliance
 func ValidateVnfdPostBody(body []byte) error {
@@ -196,6 +196,25 @@ func ValidatePaginatedVnfdsInstancesBody(jsonval []byte) error {
 	ioReaderObj := strings.NewReader(schemaText)
 	return ValidateJSONBufAgainstSchema(jsonval, ioReaderObj, "vnfdsPaginatedInstancesBody.json")
 }
+
+// ValidateInputParamAgainstParameterizedVnfd validates the given "input_param"
+// JSON file against the dynamically generated JSON Schema
+func ValidateInputParamAgainstParameterizedVnfd(inputParamJSON []byte,
+	parameterizedVnfdJSON []byte) error {
+	log.Debug()
+	inputParamDynSchema, e := GenerateJSONSchemaFromParameterizedTemplate(parameterizedVnfdJSON)
+	if e != nil {
+		return e
+	}
+	data, e := yaml.YAMLToJSON(inputParamDynSchema)
+	if e != nil {
+		return e
+	}
+	fmt.Println(string(data))
+
+	return ValidateJSONBufAgainstSchema(inputParamJSON, strings.NewReader(string(data)), "inputParam.json")
+
+}*/
 
 // ValidateJSONBufAgainstSchema takes as arguments:
 // i) a json buffer that needs to be validated against a schema
@@ -231,25 +250,6 @@ func ValidateJSONBufAgainstSchema(jsonval []byte,
 		return errors.New(strings.Split(zerr.Error(), "\n")[l-1])
 	}
 	return nil
-}
-
-// ValidateInputParamAgainstParameterizedVnfd validates the given "input_param"
-// JSON file against the dynamically generated JSON Schema
-func ValidateInputParamAgainstParameterizedVnfd(inputParamJSON []byte,
-	parameterizedVnfdJSON []byte) error {
-	log.Debug()
-	inputParamDynSchema, e := GenerateJSONSchemaFromParameterizedTemplate(parameterizedVnfdJSON)
-	if e != nil {
-		return e
-	}
-	data, e := yaml.YAMLToJSON(inputParamDynSchema)
-	if e != nil {
-		return e
-	}
-	fmt.Println(string(data))
-
-	return ValidateJSONBufAgainstSchema(inputParamJSON, strings.NewReader(string(data)), "inputParam.json")
-
 }
 
 // GetRegexMatchingListFromJSONBuff returns a list of strings that match
