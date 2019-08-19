@@ -1,0 +1,11 @@
+{
+  "inputParam": {
+    "type": "object",
+    "properties": {
+      "name": {"type":  "string", "pattern":  "^[A-Za-z][-A-Za-z0-9_]*$"},
+      "vnfd_id": {"type":  "string", "pattern": "^VNFD-[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"}
+    },
+    "required": ["name", "vnfd_id"],
+    "additionalProperties": false
+  }
+}

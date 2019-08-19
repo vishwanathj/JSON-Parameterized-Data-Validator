@@ -1,0 +1,27 @@
+{
+  "vnfdInstance": {
+    "type": "object",
+    "properties": {
+      "id": {"type":  "string", "pattern": "^VNFD-[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"},
+      "name": {"type":  "string", "pattern":  "^[A-Za-z][-A-Za-z0-9_]*$"},
+      "status": {"enum":  ["available"] },
+      "created_at": {"type":  "string", "format": "date-time"},
+      "virtual_links": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "$ref": "vnfdDefine.json#/vnfdDefine/virtual_link"
+        }
+      },
+      "vdus": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "$ref": "vnfdDefine.json#/vnfdDefine/vdu"
+        }
+      }
+    },
+    "required": ["id", "name", "status", "created_at", "vdus", "virtual_links"],
+    "additionalProperties": false
+  }
+}

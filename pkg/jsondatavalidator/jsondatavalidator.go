@@ -46,6 +46,15 @@ var SchemaFileDefineNonParam string
 func init() {
 	log.Debug()
 	localUnitTest := os.Getenv("TEST")
+	log.Debug(localUnitTest)
+
+	SchemaDir = "../schema/"
+	SchemaInputPath = "../schema/vnfdInputSchema.json#/vnfdInput"
+	SchemaParameterizedInstanceRelPath = "../schema/vnfdInstanceSchema.json#/vnfdInstance"
+	SchemaPaginatedInstancesRelPath = "../schema/vnfdPaginatedInstanceSchema.json#/vnfdsPaginatedInstances"
+	SchemaFileInputParam = "inputParam.json"
+	SchemaFileDefineNonParam = "vnfdDefineNonParam.json"
+	/*
 	if localUnitTest == "true" {
 		SchemaDir = "../schema/"
 		SchemaInputPath = "../schema/vnfdInputSchema.json#/vnfdInput"
@@ -60,7 +69,7 @@ func init() {
 		SchemaPaginatedInstancesRelPath = "/usr/share/vnfdservice/schema/vnfdPaginatedInstanceSchema.json#/vnfdsPaginatedInstances"
 		SchemaFileInputParam = "inputParam.json"
 		SchemaFileDefineNonParam = "vnfdDefineNonParam.json"
-	}
+	}*/
 }
 
 const (

@@ -1,0 +1,86 @@
+{
+  "vnfdDefine": {
+    "vdu": {
+      "type": "object",
+      "properties": {
+        "name": {"type":  "string", "pattern": "^[A-Za-z][-A-Za-z0-9_]*$"},
+        "vcpus": {
+          "type": "integer", "minimum": 2, "maximum": 16, "multipleOf": 2.0
+        },
+        "memory": {"type": "integer", "minimum": 512, "maximum": 16384, "multipleOf": 512},
+        "disk_size": {"type": "integer", "minimum": 100, "maximum": 1000, "multipleOf": 10},
+        "image": { "type": "string", "pattern": "^[A-Za-z][-A-Za-z0-9_.]*$"},
+        "high_availability": {
+          "type": "string","enum":  ["ActivePassive", "ActiveActive"]},
+        "constraints": {
+          "type": "object",
+          "properties": {
+            "vim_id": {"enum": ["SoftLayer", "OpenStack"]},
+            "dedicated": {"type": "boolean"}
+          },
+          "optional": ["vim_id", "dedicated"],
+          "additionalProperties": false
+        },
+        "scale_in_out": {
+          "type": "object",
+          "properties": {
+            "minimum": {"type": "integer", "minimum": 1, "maximum": 16, "multipleOf": 1.0},
+            "maximum": {"type": "integer", "minimum": 1, "maximum": 16, "multipleOf": 1.0},
+            "default": {"type": "integer", "minimum": 1, "maximum": 16, "multipleOf": 1.0}
+          },
+          "required": ["minimum","maximum","default"],
+          "additionalProperties": false
+        },
+        "vnfcs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/vnfdDefine/vnfc"
+          }
+        }
+      },
+      "required": ["name", "vcpus", "memory", "disk_size", "image", "vnfcs"],
+      "optional": ["high_availability", "constraints", "scale_in_out"],
+      "additionalProperties": false
+    },
+    "vnfc": {
+      "type": "object",
+      "properties":{
+        "name": {"type":  "string", "pattern": "^[A-Za-z][-A-Za-z0-9_]*$"},
+        "connection_points": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {"type":  "string", "pattern": "^[A-Za-z][-A-Za-z0-9_]*$"},
+              "ip_address": {"type": "string", "format": "ip-address"},
+              "virtualLinkReference":{
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][-A-Za-z0-9_]*$"
+                }
+              }
+            },
+            "required": ["name", "virtualLinkReference", "ip_address"],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": ["connection_points"],
+      "additionalProperties": false
+    },
+    "virtual_link": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "pattern": "^[A-Za-z][-A-Za-z0-9_]*$"},
+        "is_management": {
+          "type": "boolean"
+        }
+      },
+      "required": ["name"],
+      "optional": ["is_management"],
+      "additionalProperties": false
+    }
+  }
+}

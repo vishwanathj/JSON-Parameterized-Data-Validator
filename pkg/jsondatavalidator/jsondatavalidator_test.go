@@ -2,13 +2,13 @@
 
 //https://stackoverflow.com/questions/25965584/separating-unit-tests-and-integration-tests-in-go
 
-package jsondatavalidator
+package jsondatavalidator_test
 
 import (
 	"fmt"
 	"github.com/ghodss/yaml"
 	"github.com/santhosh-tekuri/jsonschema"
-	"github.com/vishwanathj/golangexercises/go_web_server/pkg/utils"
+	"github.com/vishwanathj/JSON-Parameterized-Data-Validator/pkg/jsondatavalidator"
 	"io/ioutil"
 	"path/filepath"
 	"strings"
@@ -33,7 +33,7 @@ var BASE_DIR_INVALID_Paginated = BASE_DIR + "invalid/parameterizedPaginatedInsta
 //var SchemaDir = "../schema/"
 
 func TestValidatePaginatedVnfdsInstancesBody_Positive(t *testing.T) {
-	bpath := utils.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Paginated)
+	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Paginated)
 	files, err := ioutil.ReadDir(bpath)
 	fmt.Println("len:=", len(files))
 	fmt.Println(bpath)
@@ -52,7 +52,7 @@ func TestValidatePaginatedVnfdsInstancesBody_Positive(t *testing.T) {
 				t.Fail()
 			}
 
-			err = utils.ValidatePaginatedVnfdsInstancesBody(yamlText)
+			err = jsondatavalidator.ValidatePaginatedVnfdsInstancesBody(yamlText)
 
 			if err == nil {
 				t.Log("Success")
@@ -65,7 +65,7 @@ func TestValidatePaginatedVnfdsInstancesBody_Positive(t *testing.T) {
 }
 
 func TestValidatePaginatedVnfdsInstancesBody_Negative(t *testing.T) {
-	bpath := utils.GetAbsDIRPathGivenRelativePath(BASE_DIR_INVALID_Paginated)
+	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_INVALID_Paginated)
 	files, err := ioutil.ReadDir(bpath)
 	fmt.Println("len:=", len(files))
 	fmt.Println(bpath)
@@ -84,7 +84,7 @@ func TestValidatePaginatedVnfdsInstancesBody_Negative(t *testing.T) {
 				t.Fail()
 			}
 
-			err = utils.ValidatePaginatedVnfdsInstancesBody(yamlText)
+			err = jsondatavalidator.ValidatePaginatedVnfdsInstancesBody(yamlText)
 
 			if err == nil {
 				t.Error("FAIL")
@@ -97,7 +97,7 @@ func TestValidatePaginatedVnfdsInstancesBody_Negative(t *testing.T) {
 }
 
 func TestValidateVnfdPostBody_PositiveCases(t *testing.T) {
-	bpath := utils.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Input)
+	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Input)
 	files, err := ioutil.ReadDir(bpath)
 	fmt.Println("len:=", len(files))
 	fmt.Println(bpath)
@@ -116,7 +116,7 @@ func TestValidateVnfdPostBody_PositiveCases(t *testing.T) {
 				t.Fail()
 			}
 
-			err = utils.ValidateVnfdPostBody(yamlText)
+			err = jsondatavalidator.ValidateVnfdPostBody(yamlText)
 
 			if err == nil {
 				t.Log("Success")
@@ -129,7 +129,7 @@ func TestValidateVnfdPostBody_PositiveCases(t *testing.T) {
 }
 
 func TestValidateVnfdPostBody_NegativeCases(t *testing.T) {
-	bpath := utils.GetAbsDIRPathGivenRelativePath(BASE_DIR_INVALID_Parameterized_Input)
+	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_INVALID_Parameterized_Input)
 	files, err := ioutil.ReadDir(bpath)
 	fmt.Println("len:=", len(files))
 	fmt.Println(bpath)
@@ -148,7 +148,7 @@ func TestValidateVnfdPostBody_NegativeCases(t *testing.T) {
 				t.Fail()
 			}
 
-			err = utils.ValidateVnfdPostBody(yamlText)
+			err = jsondatavalidator.ValidateVnfdPostBody(yamlText)
 
 			if err == nil {
 				t.Error("FAIL")
@@ -161,7 +161,7 @@ func TestValidateVnfdPostBody_NegativeCases(t *testing.T) {
 }
 
 func TestValidateVnfdInstanceBody_PositiveCases(t *testing.T) {
-	bpath := utils.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Instance)
+	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Instance)
 	files, err := ioutil.ReadDir(bpath)
 	fmt.Println("len:=", len(files))
 	fmt.Println(bpath)
@@ -180,7 +180,7 @@ func TestValidateVnfdInstanceBody_PositiveCases(t *testing.T) {
 				t.Fail()
 			}
 
-			err = utils.ValidateVnfdInstanceBody(yamlText)
+			err = jsondatavalidator.ValidateVnfdInstanceBody(yamlText)
 
 			if err == nil {
 				t.Log("Success")
@@ -193,7 +193,7 @@ func TestValidateVnfdInstanceBody_PositiveCases(t *testing.T) {
 }
 
 func TestValidateVnfdInstanceBody_NegativeCases(t *testing.T) {
-	bpath := utils.GetAbsDIRPathGivenRelativePath(BASE_DIR_INVALID_Parameterized_Instance)
+	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_INVALID_Parameterized_Instance)
 	files, err := ioutil.ReadDir(bpath)
 	fmt.Println("len:=", len(files))
 	fmt.Println(bpath)
@@ -212,7 +212,7 @@ func TestValidateVnfdInstanceBody_NegativeCases(t *testing.T) {
 				t.Fail()
 			}
 
-			err = utils.ValidateVnfdInstanceBody(yamlText)
+			err = jsondatavalidator.ValidateVnfdInstanceBody(yamlText)
 
 			if err == nil {
 				t.Error("FAIL")
@@ -226,7 +226,7 @@ func TestValidateVnfdInstanceBody_NegativeCases(t *testing.T) {
 
 func TestValidNonParameterizedInputYaml(t *testing.T) {
 
-	bpath := utils.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_NonParameterized_Input)
+	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_NonParameterized_Input)
 	files, err := ioutil.ReadDir(bpath)
 	fmt.Println("len:=", len(files))
 	fmt.Println(bpath)
@@ -255,7 +255,7 @@ func TestValidNonParameterizedInputYaml(t *testing.T) {
 
 			compiler := jsonschema.NewCompiler()
 			//compiler.Draft = jsonschema.Draft4
-			schemaTextNonParameterizedInput := utils.GetSchemaStringWhenGivenFilePath(utils.SchemaInputPath)
+			schemaTextNonParameterizedInput := jsondatavalidator.GetSchemaStringWhenGivenFilePath(jsondatavalidator.SchemaInputPath)
 			if err := compiler.AddResource("schema.json", strings.NewReader(schemaTextNonParameterizedInput)); err != nil {
 				panic(err)
 				t.Errorf("panic: AddResource ERROR")
@@ -278,7 +278,7 @@ func TestValidNonParameterizedInputYaml(t *testing.T) {
 
 func TestInValidNonParameterizedInputYaml(t *testing.T) {
 
-	bpath := utils.GetAbsDIRPathGivenRelativePath(BASE_DIR_INVALID_NonParameterized_Input)
+	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_INVALID_NonParameterized_Input)
 	files, err := ioutil.ReadDir(bpath)
 	fmt.Println("len:=", len(files))
 	fmt.Println(bpath)
@@ -307,7 +307,7 @@ func TestInValidNonParameterizedInputYaml(t *testing.T) {
 
 			compiler := jsonschema.NewCompiler()
 			//compiler.Draft = jsonschema.Draft4
-			schemaTextNonParameterizedInput := utils.GetSchemaStringWhenGivenFilePath(utils.SchemaInputPath)
+			schemaTextNonParameterizedInput := jsondatavalidator.GetSchemaStringWhenGivenFilePath(jsondatavalidator.SchemaInputPath)
 			if err := compiler.AddResource("schema.json", strings.NewReader(schemaTextNonParameterizedInput)); err != nil {
 				panic(err)
 				t.Errorf("panic: AddResource ERROR")
@@ -329,7 +329,7 @@ func TestInValidNonParameterizedInputYaml(t *testing.T) {
 
 func TestValidParameterizedInputYaml(t *testing.T) {
 
-	bpath := utils.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Input)
+	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Input)
 	files, err := ioutil.ReadDir(bpath)
 	fmt.Println("len:=", len(files))
 	fmt.Println(bpath)
@@ -358,7 +358,7 @@ func TestValidParameterizedInputYaml(t *testing.T) {
 
 			compiler := jsonschema.NewCompiler()
 			//compiler.Draft = jsonschema.Draft4
-			schemaTextParameterizedInput := utils.GetSchemaStringWhenGivenFilePath(utils.SchemaInputPath)
+			schemaTextParameterizedInput := jsondatavalidator.GetSchemaStringWhenGivenFilePath(jsondatavalidator.SchemaInputPath)
 			if err := compiler.AddResource("schema.json", strings.NewReader(schemaTextParameterizedInput)); err != nil {
 				panic(err)
 				t.Errorf("panic: AddResource ERROR")
@@ -381,7 +381,7 @@ func TestValidParameterizedInputYaml(t *testing.T) {
 }
 
 func TestInValidParameterizedInputYaml(t *testing.T) {
-	bpath := utils.GetAbsDIRPathGivenRelativePath(BASE_DIR_INVALID_Parameterized_Input)
+	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_INVALID_Parameterized_Input)
 	files, err := ioutil.ReadDir(bpath)
 	fmt.Println("len:=", len(files))
 	fmt.Println(bpath)
@@ -412,7 +412,7 @@ func TestInValidParameterizedInputYaml(t *testing.T) {
 			//compiler.Draft = jsonschema.Draft4
 			//if err := compiler.AddResource("schema.json", strings.NewReader(schemaTextParameterizedInput)); err != nil {
 			//if err := compiler.AddResource("schema.json", strings.NewReader(utilGetSchemaTextParameterizedInput())); err != nil {
-			schemaTextParameterizedInput := utils.GetSchemaStringWhenGivenFilePath(utils.SchemaInputPath)
+			schemaTextParameterizedInput := jsondatavalidator.GetSchemaStringWhenGivenFilePath(jsondatavalidator.SchemaInputPath)
 			if err := compiler.AddResource("schema.json", strings.NewReader(schemaTextParameterizedInput)); err != nil {
 				panic(err)
 				t.Errorf("panic: AddResource ERROR")
@@ -435,7 +435,7 @@ func TestInValidParameterizedInputYaml(t *testing.T) {
 }
 
 func TestValidParameterizedInstanceYaml(t *testing.T) {
-	bpath := utils.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Instance)
+	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Instance)
 	files, err := ioutil.ReadDir(bpath)
 	fmt.Println("len:=", len(files))
 	fmt.Println(bpath)
@@ -466,7 +466,7 @@ func TestValidParameterizedInstanceYaml(t *testing.T) {
 			//compiler.Draft = jsonschema.Draft4
 			//if err := compiler.AddResource("schema.json", strings.NewReader(utilGetSchemaTextParameterizedInstance())); err != nil {
 			//if err := compiler.AddResource("schema.json", strings.NewReader(schemaTextParameterizedInstance)); err != nil {
-			schemaTextParameterizedInstance := utils.GetSchemaStringWhenGivenFilePath(utils.SchemaParameterizedInstanceRelPath)
+			schemaTextParameterizedInstance := jsondatavalidator.GetSchemaStringWhenGivenFilePath(jsondatavalidator.SchemaParameterizedInstanceRelPath)
 			if err := compiler.AddResource("schema.json", strings.NewReader(schemaTextParameterizedInstance)); err != nil {
 				panic(err)
 				t.Errorf("panic: AddResource ERROR")
@@ -488,7 +488,7 @@ func TestValidParameterizedInstanceYaml(t *testing.T) {
 }
 
 func TestInValidParameterizedInstanceYaml(t *testing.T) {
-	bpath := utils.GetAbsDIRPathGivenRelativePath(BASE_DIR_INVALID_Parameterized_Instance)
+	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_INVALID_Parameterized_Instance)
 	files, err := ioutil.ReadDir(bpath)
 	fmt.Println("len:=", len(files))
 	fmt.Println(bpath)
@@ -519,7 +519,7 @@ func TestInValidParameterizedInstanceYaml(t *testing.T) {
 			//compiler.Draft = jsonschema.Draft4
 			//if err := compiler.AddResource("schema.json", strings.NewReader(utilGetSchemaTextParameterizedInstance())); err != nil {
 			//if err := compiler.AddResource("schema.json", strings.NewReader(schemaTextParameterizedInstance)); err != nil {
-			schemaTextParameterizedInstance := utils.GetSchemaStringWhenGivenFilePath(utils.SchemaParameterizedInstanceRelPath)
+			schemaTextParameterizedInstance := jsondatavalidator.GetSchemaStringWhenGivenFilePath(jsondatavalidator.SchemaParameterizedInstanceRelPath)
 			if err := compiler.AddResource("schema.json", strings.NewReader(schemaTextParameterizedInstance)); err != nil {
 				panic(err)
 				t.Errorf("panic: AddResource ERROR")
@@ -542,7 +542,7 @@ func TestInValidParameterizedInstanceYaml(t *testing.T) {
 }
 
 func TestPositiveGetRegexMatchingListFromJSONBuff(t *testing.T) {
-	bpath := utils.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Input)
+	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Input)
 	files, err := ioutil.ReadDir(bpath)
 	fmt.Println("len:=", len(files))
 	fmt.Println(bpath)
@@ -568,7 +568,7 @@ func TestPositiveGetRegexMatchingListFromJSONBuff(t *testing.T) {
 
 				// The regexp looks for the $ anywhere in the line
 
-				lst := utils.GetRegexMatchingListFromJSONBuff(yamlText, rxp)
+				lst := jsondatavalidator.GetRegexMatchingListFromJSONBuff(yamlText, rxp)
 				if len(lst) != 0 {
 					t.Log(lst, len(lst))
 				} else {
@@ -581,7 +581,7 @@ func TestPositiveGetRegexMatchingListFromJSONBuff(t *testing.T) {
 }
 
 func TestPositive_GetEntireLinesFromYAMLFile_WhenRegexMatched_FromJSONBuff(t *testing.T) {
-	bpath := utils.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Input)
+	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Input)
 	files, err := ioutil.ReadDir(bpath)
 	fmt.Println("len:=", len(files))
 	fmt.Println(bpath)
@@ -606,7 +606,7 @@ func TestPositive_GetEntireLinesFromYAMLFile_WhenRegexMatched_FromJSONBuff(t *te
 
 				// The regexp looks for the $ anywhere in the line
 
-				lst := utils.GetRegexMatchingListFromJSONBuff(yamlText, rxp)
+				lst := jsondatavalidator.GetRegexMatchingListFromJSONBuff(yamlText, rxp)
 				if len(lst) != 0 {
 					t.Log(lst, len(lst))
 				} else {
@@ -619,7 +619,7 @@ func TestPositive_GetEntireLinesFromYAMLFile_WhenRegexMatched_FromJSONBuff(t *te
 }
 
 func TestNegative_GetRegexMatching_List_FromJSONBuff(t *testing.T) {
-	bpath := utils.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Input)
+	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Input)
 	files, err := ioutil.ReadDir(bpath)
 	fmt.Println("len:=", len(files))
 	fmt.Println(bpath)
@@ -640,7 +640,7 @@ func TestNegative_GetRegexMatching_List_FromJSONBuff(t *testing.T) {
 			}
 
 			// The regexp looks for the $ in the beginning of the line and should fail
-			lst := utils.GetRegexMatchingListFromJSONBuff(yamlText, `^\$[A-Za-z][-A-Za-z0-9_]*`)
+			lst := jsondatavalidator.GetRegexMatchingListFromJSONBuff(yamlText, `^\$[A-Za-z][-A-Za-z0-9_]*`)
 			if len(lst) != 0 {
 				t.Error(lst)
 			} else {
@@ -652,7 +652,7 @@ func TestNegative_GetRegexMatching_List_FromJSONBuff(t *testing.T) {
 
 /*
 func TestParse_NestedMap_ToObtain_LeafKeyValues(t *testing.T) {
-	bpath := utils.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Input)
+	bpath := GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Input)
 	files, err := ioutil.ReadDir(bpath)
 
 	// The regexp looks for the $ anywhere in the line
@@ -679,13 +679,13 @@ func TestParse_NestedMap_ToObtain_LeafKeyValues(t *testing.T) {
 				yaml.Unmarshal(yamlText, &m)
 				//fmt.Println(m)
 
-				pvm := utils.NewSearchResults(utils.MatchKey, `\$.*`)
+				pvm := NewSearchResults(MatchKey, `\$.*`)
 				pvm.ParseMap(m)
 				fmt.Println(pvm.Results)
 
 				// The regexp looks for the $ anywhere in the line
 
-				lst := utils.GetRegexMatchingListFromJSONBuff(yamlText, rxp)
+				lst := GetRegexMatchingListFromJSONBuff(yamlText, rxp)
 
 				if len(lst) != 0 {
 					t.Log(pvm)
@@ -698,7 +698,7 @@ func TestParse_NestedMap_ToObtain_LeafKeyValues(t *testing.T) {
 }*/
 
 func TestPositive_Parse_NestedJSONSchema_ToObtain_Values_GivenAKey(t *testing.T) {
-	bpath := utils.GetAbsDIRPathGivenRelativePath(utils.SchemaDir)
+	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(jsondatavalidator.SchemaDir)
 	files, err := ioutil.ReadDir(bpath)
 	fmt.Println("len:=", len(files))
 	fmt.Println(bpath)
@@ -724,7 +724,7 @@ func TestPositive_Parse_NestedJSONSchema_ToObtain_Values_GivenAKey(t *testing.T)
 	yaml.Unmarshal(yamlText, &m)
 
 	for _, elem := range patternList {
-		pvm := utils.NewSearchResults(utils.MatchKey, elem)
+		pvm := jsondatavalidator.NewSearchResults(jsondatavalidator.MatchKey, elem)
 		pvm.ParseMap(m)
 
 		if len(pvm.Results) == 0 {
@@ -738,7 +738,7 @@ func TestPositive_Parse_NestedJSONSchema_ToObtain_Values_GivenAKey(t *testing.T)
 }
 
 func TestPositive_Parse_NestedJSONSchema_ToObtain_Key_GivenValue(t *testing.T) {
-	bpath := utils.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Input)
+	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Input)
 	files, err := ioutil.ReadDir(bpath)
 	fmt.Println("len:=", len(files))
 	fmt.Println(bpath)
@@ -760,7 +760,7 @@ func TestPositive_Parse_NestedJSONSchema_ToObtain_Key_GivenValue(t *testing.T) {
 
 			var m map[string]interface{}
 			yaml.Unmarshal(yamlText, &m)
-			pvm := utils.NewSearchResults(utils.MatchValue, `\$.*`)
+			pvm := jsondatavalidator.NewSearchResults(jsondatavalidator.MatchValue, `\$.*`)
 			pvm.ParseMap(m)
 
 			if len(pvm.Results) == 0 {
@@ -774,7 +774,7 @@ func TestPositive_Parse_NestedJSONSchema_ToObtain_Key_GivenValue(t *testing.T) {
 }
 
 func TestGenerateJSONSchemaFromParameterizedVNFDTemplate_Positive(t *testing.T) {
-	bpath := utils.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Input)
+	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Input)
 	files, err := ioutil.ReadDir(bpath)
 	fmt.Println("len:=", len(files))
 	fmt.Println(bpath)
@@ -791,7 +791,7 @@ func TestGenerateJSONSchemaFromParameterizedVNFDTemplate_Positive(t *testing.T) 
 		t.Fail()
 	}
 
-	r, e := utils.GenerateJSONSchemaFromParameterizedTemplate(yamlText)
+	r, e := jsondatavalidator.GenerateJSONSchemaFromParameterizedTemplate(yamlText)
 
 	if e != nil {
 		t.Fatal(e)
@@ -819,8 +819,8 @@ func TestPositive_ValidateInputParamAgainstParameterizedVnfd(t *testing.T) {
 			"validParameterizedVNFDInputWithOptionalProps.yaml"},
 	}
 
-	vnfdpath := utils.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Input)
-	inputparampath := utils.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Input_Param)
+	vnfdpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Input)
+	inputparampath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Input_Param)
 
 	for _, table := range tables {
 		inparam, ierr := ioutil.ReadFile(inputparampath + "/" + table.inputParamFileName)
@@ -834,7 +834,7 @@ func TestPositive_ValidateInputParamAgainstParameterizedVnfd(t *testing.T) {
 			t.Fatal(verr)
 		}
 
-		err := utils.ValidateInputParamAgainstParameterizedVnfd(inparam, vnfd)
+		err := jsondatavalidator.ValidateInputParamAgainstParameterizedVnfd(inparam, vnfd)
 		if err != nil {
 			t.Log(err)
 			t.Fail()
@@ -871,8 +871,8 @@ func TestNegative_ValidateInputParamAgainstParameterizedVnfd(t *testing.T) {
 			"validParameterizedVNFDInputWithOptionalProps.yaml"},
 	}
 
-	vnfdpath := utils.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Input)
-	inputparampath := utils.GetAbsDIRPathGivenRelativePath(BASE_DIR_INVALID_Input_Param)
+	vnfdpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Input)
+	inputparampath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_INVALID_Input_Param)
 
 	for _, table := range tables {
 		inparam, ierr := ioutil.ReadFile(inputparampath + "/" + table.inputParamFileName)
@@ -886,7 +886,7 @@ func TestNegative_ValidateInputParamAgainstParameterizedVnfd(t *testing.T) {
 			t.Fatal(verr)
 		}
 
-		err := utils.ValidateInputParamAgainstParameterizedVnfd(inparam, vnfd)
+		err := jsondatavalidator.ValidateInputParamAgainstParameterizedVnfd(inparam, vnfd)
 		if err != nil {
 			t.Log(err)
 		} else {
@@ -896,7 +896,7 @@ func TestNegative_ValidateInputParamAgainstParameterizedVnfd(t *testing.T) {
 }
 
 func TestGenerateJSONSchemaFromNonParameterizedVNFDTemplate_Positive(t *testing.T) {
-	bpath := utils.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_NonParameterized_Input)
+	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_NonParameterized_Input)
 	files, err := ioutil.ReadDir(bpath)
 	fmt.Println("len:=", len(files))
 	fmt.Println(bpath)
@@ -913,7 +913,7 @@ func TestGenerateJSONSchemaFromNonParameterizedVNFDTemplate_Positive(t *testing.
 		t.Fail()
 	}
 
-	r, e := utils.GenerateJSONSchemaFromParameterizedTemplate(yamlText)
+	r, e := jsondatavalidator.GenerateJSONSchemaFromParameterizedTemplate(yamlText)
 
 	if e != nil {
 		t.Fatal(e)
@@ -923,7 +923,7 @@ func TestGenerateJSONSchemaFromNonParameterizedVNFDTemplate_Positive(t *testing.
 }
 
 func TestPositive_GetEntireLinesFromJSONSchemaFile_WhenStringMatched_FromJSONBuff(t *testing.T) {
-	bpath := utils.GetAbsDIRPathGivenRelativePath(utils.SchemaDir)
+	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(jsondatavalidator.SchemaDir)
 	files, err := ioutil.ReadDir(bpath)
 	fmt.Println("len:=", len(files))
 	fmt.Println(bpath)
@@ -949,7 +949,7 @@ func TestPositive_GetEntireLinesFromJSONSchemaFile_WhenStringMatched_FromJSONBuf
 
 				// The regexp looks for the $ anywhere in the line
 
-				lst := utils.GetRegexMatchingListFromJSONBuff(yamlText, `.*`+rxp+`.*`)
+				lst := jsondatavalidator.GetRegexMatchingListFromJSONBuff(yamlText, `.*`+rxp+`.*`)
 				if len(lst) != 0 {
 					fmt.Println(lst)
 					t.Log(lst, len(lst))
@@ -963,7 +963,7 @@ func TestPositive_GetEntireLinesFromJSONSchemaFile_WhenStringMatched_FromJSONBuf
 
 func TestValidateJSONBufAgainstSchema_Negative_InvalidJSON(t *testing.T) {
 	malformedJson := []byte(`{"key":`)
-	err := utils.ValidateJSONBufAgainstSchema(malformedJson, strings.NewReader("dummy"), "d")
+	err := jsondatavalidator.ValidateJSONBufAgainstSchema(malformedJson, strings.NewReader("dummy"), "d")
 	if err != nil {
 		t.Log(err)
 	} else {
@@ -973,7 +973,7 @@ func TestValidateJSONBufAgainstSchema_Negative_InvalidJSON(t *testing.T) {
 
 func TestValidateJSONBufAgainstSchema_Negative_InvalidURL(t *testing.T) {
 	jsonval := []byte(`{"key": "val"}`)
-	err := utils.ValidateJSONBufAgainstSchema(jsonval, strings.NewReader("dummy"), "d")
+	err := jsondatavalidator.ValidateJSONBufAgainstSchema(jsonval, strings.NewReader("dummy"), "d")
 	if err != nil {
 		t.Log(err)
 	} else {
@@ -984,7 +984,7 @@ func TestValidateJSONBufAgainstSchema_Negative_InvalidURL(t *testing.T) {
 /*
 func TestValidateJSONBufAgainstSchema_Negative_FailCompile(t *testing.T) {
 	jsonval := []byte(`{"type": "object","properties": {"name": {"type": "integer"}},"additionalProperties": false}`)
-	err := utils.ValidateJSONBufAgainstSchema(jsonval, strings.NewReader(`{"name": "hola"}`), "h.json")
+	err := ValidateJSONBufAgainstSchema(jsonval, strings.NewReader(`{"name": "hola"}`), "h.json")
 	if err != nil {
 		t.Log(err)
 	} else {
