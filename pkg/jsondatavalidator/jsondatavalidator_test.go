@@ -7,7 +7,6 @@ package jsondatavalidator_test
 import (
 	"fmt"
 	"github.com/ghodss/yaml"
-	"github.com/santhosh-tekuri/jsonschema"
 	"github.com/vishwanathj/JSON-Parameterized-Data-Validator/pkg/jsondatavalidator"
 	"io/ioutil"
 	"path/filepath"
@@ -28,10 +27,7 @@ var BASE_DIR_INVALID_Input_Param = BASE_DIR + "invalid/inputParam/"
 var BASE_DIR_VALID_Paginated = BASE_DIR + "valid/parameterizedPaginatedInstances/"
 var BASE_DIR_INVALID_Paginated = BASE_DIR + "invalid/parameterizedPaginatedInstances/"
 
-
-
-//var SchemaDir = "../schema/"
-
+/*
 func TestValidatePaginatedVnfdsInstancesBody_Positive(t *testing.T) {
 	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Paginated)
 	files, err := ioutil.ReadDir(bpath)
@@ -539,7 +535,7 @@ func TestInValidParameterizedInstanceYaml(t *testing.T) {
 
 		}
 	}
-}
+}*/
 
 func TestPositiveGetRegexMatchingListFromJSONBuff(t *testing.T) {
 	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Input)
@@ -773,7 +769,7 @@ func TestPositive_Parse_NestedJSONSchema_ToObtain_Key_GivenValue(t *testing.T) {
 	}
 }
 
-func TestGenerateJSONSchemaFromParameterizedVNFDTemplate_Positive(t *testing.T) {
+func TestGenerateJSONSchemaFromParameterizedTemplate_Positive(t *testing.T) {
 	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Input)
 	files, err := ioutil.ReadDir(bpath)
 	fmt.Println("len:=", len(files))
@@ -800,6 +796,7 @@ func TestGenerateJSONSchemaFromParameterizedVNFDTemplate_Positive(t *testing.T) 
 	}
 }
 
+/*
 func TestPositive_ValidateInputParamAgainstParameterizedVnfd(t *testing.T) {
 	tables := []struct {
 		inputParamFileName    string
@@ -894,6 +891,7 @@ func TestNegative_ValidateInputParamAgainstParameterizedVnfd(t *testing.T) {
 		}
 	}
 }
+*/
 
 func TestGenerateJSONSchemaFromNonParameterizedVNFDTemplate_Positive(t *testing.T) {
 	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_NonParameterized_Input)
