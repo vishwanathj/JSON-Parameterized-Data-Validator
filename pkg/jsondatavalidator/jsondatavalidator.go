@@ -25,15 +25,15 @@ var SchemaDir string
 
 // SchemaInputPath is path to schema file for
 // Parameterized templates
-var SchemaInputPath string
+//var SchemaInputPath string
 
 // SchemaParameterizedInstanceRelPath is path to schema file for
 // instantiated Parameterized templates
-var SchemaParameterizedInstanceRelPath string
+//var SchemaParameterizedInstanceRelPath string
 
 // SchemaPaginatedInstancesRelPath is path to schema file
 // for paginated output structure
-var SchemaPaginatedInstancesRelPath string
+//var SchemaPaginatedInstancesRelPath string
 
 // SchemaFileInputParam is name of schema file for input param files
 var SchemaFileInputParam string
@@ -49,16 +49,16 @@ func init() {
 
 	if localUnitTest == "true" {
 		SchemaDir = "../schema/"
-		SchemaInputPath = "../schema/vnfdInputSchema.json#/vnfdInput"
-		SchemaParameterizedInstanceRelPath = "../schema/vnfdInstanceSchema.json#/vnfdInstance"
-		SchemaPaginatedInstancesRelPath = "../schema/vnfdPaginatedInstanceSchema.json#/vnfdsPaginatedInstances"
+		//SchemaInputPath = "../schema/vnfdInputSchema.json#/vnfdInput"
+		//SchemaParameterizedInstanceRelPath = "../schema/vnfdInstanceSchema.json#/vnfdInstance"
+		//SchemaPaginatedInstancesRelPath = "../schema/vnfdPaginatedInstanceSchema.json#/vnfdsPaginatedInstances"
 		SchemaFileInputParam = "inputParam.json"
 		SchemaFileDefineNonParam = "vnfdDefineNonParam.json"
 	} else {
 		SchemaDir = "/usr/share/vnfdservice/schema/"
-		SchemaInputPath = "/usr/share/vnfdservice/schema/vnfdInputSchema.json#/vnfdInput"
-		SchemaParameterizedInstanceRelPath = "/usr/share/vnfdservice/schema/vnfdInstanceSchema.json#/vnfdInstance"
-		SchemaPaginatedInstancesRelPath = "/usr/share/vnfdservice/schema/vnfdPaginatedInstanceSchema.json#/vnfdsPaginatedInstances"
+		//SchemaInputPath = "/usr/share/vnfdservice/schema/vnfdInputSchema.json#/vnfdInput"
+		//SchemaParameterizedInstanceRelPath = "/usr/share/vnfdservice/schema/vnfdInstanceSchema.json#/vnfdInstance"
+		//SchemaPaginatedInstancesRelPath = "/usr/share/vnfdservice/schema/vnfdPaginatedInstanceSchema.json#/vnfdsPaginatedInstances"
 		SchemaFileInputParam = "inputParam.json"
 		SchemaFileDefineNonParam = "vnfdDefineNonParam.json"
 	}
