@@ -14,7 +14,16 @@ import (
 	"testing"
 )
 
+// SchemaDir points to the relative path of where the schema files are located
 var SchemaDir = "../../test/testdata/schema/"
+
+// SchemaFileInputParam is name of schema file for input param files
+var SchemaFileInputParam = "inputParam.json"
+
+// SchemaFileDefineNonParam is name of schema file for non-parameterized templates.
+// This is needed by the GenerateJSONSchemaFromParameterizedTemplate function
+var SchemaFileDefineNonParam = "vnfdDefineNonParam.json"
+
 var BASE_DIR = "../../test/testdata/yamlfiles/"
 //var BASE_DIR_VALID_Parameterized_Input = "../../test/testdata/yamlfiles/valid/parameterizedInput/"
 var BASE_DIR_VALID_Parameterized_Input = BASE_DIR + "valid/parameterizedInput/"
@@ -789,7 +798,21 @@ func TestGenerateJSONSchemaFromParameterizedTemplate_Positive(t *testing.T) {
 		t.Fail()
 	}
 
-	r, e := jsondatavalidator.GenerateJSONSchemaFromParameterizedTemplate(yamlText)
+	abspath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(SchemaDir) + "/" + SchemaFileDefineNonParam
+	nonParamDefineJSONBuf, err := jsondatavalidator.GetSchemaDefinitionFileAsJSONBuf(abspath)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	abspath = jsondatavalidator.GetAbsDIRPathGivenRelativePath(SchemaDir) + "/" + SchemaFileInputParam
+	inputParamSchemaJSONBuf, err := jsondatavalidator.GetSchemaDefinitionFileAsJSONBuf(abspath)
+	//inputParamSchemaJSONBuf, err := GetSchemaDefinitionFileAsJSONBuf(SchemaFileInputParam)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	//r, e := jsondatavalidator.GenerateJSONSchemaFromParameterizedTemplate(yamlText)
+	r, e := jsondatavalidator.GenerateJSONSchemaFromParameterizedTemplate(yamlText, nonParamDefineJSONBuf, inputParamSchemaJSONBuf)
 
 	if e != nil {
 		t.Fatal(e)
@@ -913,7 +936,21 @@ func TestGenerateJSONSchemaFromNonParameterizedVNFDTemplate_Positive(t *testing.
 		t.Fail()
 	}
 
-	r, e := jsondatavalidator.GenerateJSONSchemaFromParameterizedTemplate(yamlText)
+	abspath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(SchemaDir) + "/" + SchemaFileDefineNonParam
+	nonParamDefineJSONBuf, err := jsondatavalidator.GetSchemaDefinitionFileAsJSONBuf(abspath)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	abspath = jsondatavalidator.GetAbsDIRPathGivenRelativePath(SchemaDir) + "/" + SchemaFileInputParam
+	inputParamSchemaJSONBuf, err := jsondatavalidator.GetSchemaDefinitionFileAsJSONBuf(abspath)
+	//inputParamSchemaJSONBuf, err := GetSchemaDefinitionFileAsJSONBuf(SchemaFileInputParam)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	//r, e := jsondatavalidator.GenerateJSONSchemaFromParameterizedTemplate(yamlText)
+	r, e := jsondatavalidator.GenerateJSONSchemaFromParameterizedTemplate(yamlText, nonParamDefineJSONBuf, inputParamSchemaJSONBuf)
 
 	if e != nil {
 		t.Fatal(e)

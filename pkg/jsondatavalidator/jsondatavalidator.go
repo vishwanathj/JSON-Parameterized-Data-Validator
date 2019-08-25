@@ -215,7 +215,62 @@ func ValidateInputParamAgainstParameterizedVnfd(inputParamJSON []byte,
 
 	return ValidateJSONBufAgainstSchema(inputParamJSON, strings.NewReader(string(data)), "inputParam.json")
 
-}*/
+}
+
+// GenerateJSONSchemaFromParameterizedTemplate generated a dynamic schema
+// by parsing the template for parameterized variables and looking up
+// allowable values for those parameterized variables.
+func GenerateJSONSchemaFromParameterizedTemplate(parameterizedJSON []byte) ([]byte, error) {
+	// The regexp looks for the $ anywhere in the line and returns the entire line
+	log.Debug()
+	validRegexList := `.*\$.*`
+
+	slist := GetRegexMatchingListFromJSONBuff(parameterizedJSON, validRegexList)
+	log.WithFields(log.Fields{"RegexMatchingList": slist}).Debug()
+
+	mapParameterizedParamAndDefinition := CreateRevMapStructFromGivenStringListWithSpecifiedSeparator(slist, ":", "-")
+	log.WithFields(log.Fields{"mapParameterizedParamAndDefinition": mapParameterizedParamAndDefinition}).Debug()
+
+	abspath := GetAbsDIRPathGivenRelativePath(SchemaDir) + "/" + SchemaFileDefineNonParam
+	nonParamDefineJSONBuf, err := GetSchemaDefinitionFileAsJSONBuf(abspath)
+	//UNCOMMENT : nonParamDefineJSONBuf, err := GetSchemaDefinitionFileAsJSONBuf(SchemaFileDefineNonParam)
+	if err != nil {
+		return nil, err
+	}
+
+	propjson := createSchemaForInputParamsFromParameterizedProperties(mapParameterizedParamAndDefinition, nonParamDefineJSONBuf)
+
+	var src map[string]interface{}
+	//_ = yaml.Unmarshal(propjson, &src)
+	_ = json.Unmarshal(propjson, &src)
+
+	////
+	abspath = GetAbsDIRPathGivenRelativePath(SchemaDir) + "/" + SchemaFileInputParam
+	inputParamSchemaJSONBuf, err := GetSchemaDefinitionFileAsJSONBuf(abspath)
+	//inputParamSchemaJSONBuf, err := GetSchemaDefinitionFileAsJSONBuf(SchemaFileInputParam)
+	if err != nil {
+		return nil, err
+	}
+	var inputParamSchemaMap map[string]interface{}
+	//_ = yaml.Unmarshal(inputParamSchemaJSONBuf, &inputParamSchemaMap)
+	_ = json.Unmarshal(inputParamSchemaJSONBuf, &inputParamSchemaMap)
+
+	inter := mergemap.Merge(inputParamSchemaMap, src)
+
+	reqjson := createSchemaForInputParamsWithRequiredSection(len(src), mapParameterizedParamAndDefinition)
+	var req map[string]interface{}
+	//_ = yaml.Unmarshal(reqjson, &req)
+	_ = json.Unmarshal(reqjson, &req)
+
+	final := mergemap.Merge(inter, req)
+
+	//r, e := yaml.Marshal(final["inputParam"])
+	r, e := json.Marshal(final["inputParam"])
+	log.Debug(string(r), e)
+	return r, e
+}
+
+*/
 
 // ValidateJSONBufAgainstSchema takes as arguments:
 // i) a json buffer that needs to be validated against a schema
@@ -354,10 +409,12 @@ func (resmap *SearchResults) ParseArray(anArray []interface{}) {
 	}
 }
 
+
+
 // GenerateJSONSchemaFromParameterizedTemplate generated a dynamic schema
 // by parsing the template for parameterized variables and looking up
 // allowable values for those parameterized variables.
-func GenerateJSONSchemaFromParameterizedTemplate(parameterizedJSON []byte) ([]byte, error) {
+func GenerateJSONSchemaFromParameterizedTemplate(parameterizedJSON []byte, nonParamDefineJSONBuf []byte, inputParamSchemaJSONBuf []byte) ([]byte, error) {
 	// The regexp looks for the $ anywhere in the line and returns the entire line
 	log.Debug()
 	validRegexList := `.*\$.*`
@@ -368,40 +425,22 @@ func GenerateJSONSchemaFromParameterizedTemplate(parameterizedJSON []byte) ([]by
 	mapParameterizedParamAndDefinition := CreateRevMapStructFromGivenStringListWithSpecifiedSeparator(slist, ":", "-")
 	log.WithFields(log.Fields{"mapParameterizedParamAndDefinition": mapParameterizedParamAndDefinition}).Debug()
 
-	abspath := GetAbsDIRPathGivenRelativePath(SchemaDir) + "/" + SchemaFileDefineNonParam
-	nonParamDefineJSONBuf, err := GetSchemaDefinitionFileAsJSONBuf(abspath)
-	//UNCOMMENT : nonParamDefineJSONBuf, err := GetSchemaDefinitionFileAsJSONBuf(SchemaFileDefineNonParam)
-	if err != nil {
-		return nil, err
-	}
-
 	propjson := createSchemaForInputParamsFromParameterizedProperties(mapParameterizedParamAndDefinition, nonParamDefineJSONBuf)
 
 	var src map[string]interface{}
-	//_ = yaml.Unmarshal(propjson, &src)
 	_ = json.Unmarshal(propjson, &src)
 
-	////
-	abspath = GetAbsDIRPathGivenRelativePath(SchemaDir) + "/" + SchemaFileInputParam
-	inputParamSchemaJSONBuf, err := GetSchemaDefinitionFileAsJSONBuf(abspath)
-	//inputParamSchemaJSONBuf, err := GetSchemaDefinitionFileAsJSONBuf(SchemaFileInputParam)
-	if err != nil {
-		return nil, err
-	}
 	var inputParamSchemaMap map[string]interface{}
-	//_ = yaml.Unmarshal(inputParamSchemaJSONBuf, &inputParamSchemaMap)
 	_ = json.Unmarshal(inputParamSchemaJSONBuf, &inputParamSchemaMap)
 
 	inter := mergemap.Merge(inputParamSchemaMap, src)
 
 	reqjson := createSchemaForInputParamsWithRequiredSection(len(src), mapParameterizedParamAndDefinition)
 	var req map[string]interface{}
-	//_ = yaml.Unmarshal(reqjson, &req)
 	_ = json.Unmarshal(reqjson, &req)
 
 	final := mergemap.Merge(inter, req)
 
-	//r, e := yaml.Marshal(final["inputParam"])
 	r, e := json.Marshal(final["inputParam"])
 	log.Debug(string(r), e)
 	return r, e
