@@ -14,6 +14,7 @@ import (
 	"testing"
 )
 
+var SchemaDir = "../../test/testdata/schema/"
 var BASE_DIR = "../../test/testdata/yamlfiles/"
 //var BASE_DIR_VALID_Parameterized_Input = "../../test/testdata/yamlfiles/valid/parameterizedInput/"
 var BASE_DIR_VALID_Parameterized_Input = BASE_DIR + "valid/parameterizedInput/"
@@ -694,7 +695,8 @@ func TestParse_NestedMap_ToObtain_LeafKeyValues(t *testing.T) {
 }*/
 
 func TestPositive_Parse_NestedJSONSchema_ToObtain_Values_GivenAKey(t *testing.T) {
-	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(jsondatavalidator.SchemaDir)
+	//bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(jsondatavalidator.SchemaDir)
+	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(SchemaDir)
 	files, err := ioutil.ReadDir(bpath)
 	fmt.Println("len:=", len(files))
 	fmt.Println(bpath)
@@ -921,7 +923,8 @@ func TestGenerateJSONSchemaFromNonParameterizedVNFDTemplate_Positive(t *testing.
 }
 
 func TestPositive_GetEntireLinesFromJSONSchemaFile_WhenStringMatched_FromJSONBuff(t *testing.T) {
-	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(jsondatavalidator.SchemaDir)
+	//bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(jsondatavalidator.SchemaDir)
+	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(SchemaDir)
 	files, err := ioutil.ReadDir(bpath)
 	fmt.Println("len:=", len(files))
 	fmt.Println(bpath)

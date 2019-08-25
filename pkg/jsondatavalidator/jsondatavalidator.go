@@ -154,8 +154,9 @@ func GetSchemaStringWhenGivenFilePath(relativePathOfJSONSchemaFile string) strin
 // GetSchemaDefinitionFileAsJSONBuf reads a Schema file and returns JSON buf
 func GetSchemaDefinitionFileAsJSONBuf(schemaFileName string) ([]byte, error) {
 	log.Debug()
-	bpath := GetAbsDIRPathGivenRelativePath(SchemaDir)
-	yamlText, err := ioutil.ReadFile(bpath + "/" + schemaFileName)
+	//bpath := GetAbsDIRPathGivenRelativePath(SchemaDir)
+	//yamlText, err := ioutil.ReadFile(bpath + "/" + schemaFileName)
+	yamlText, err := ioutil.ReadFile(schemaFileName)
 
 	if err != nil {
 		log.Error(err)
@@ -367,7 +368,9 @@ func GenerateJSONSchemaFromParameterizedTemplate(parameterizedJSON []byte) ([]by
 	mapParameterizedParamAndDefinition := CreateRevMapStructFromGivenStringListWithSpecifiedSeparator(slist, ":", "-")
 	log.WithFields(log.Fields{"mapParameterizedParamAndDefinition": mapParameterizedParamAndDefinition}).Debug()
 
-	nonParamDefineJSONBuf, err := GetSchemaDefinitionFileAsJSONBuf(SchemaFileDefineNonParam)
+	abspath := GetAbsDIRPathGivenRelativePath(SchemaDir) + "/" + SchemaFileDefineNonParam
+	nonParamDefineJSONBuf, err := GetSchemaDefinitionFileAsJSONBuf(abspath)
+	//UNCOMMENT : nonParamDefineJSONBuf, err := GetSchemaDefinitionFileAsJSONBuf(SchemaFileDefineNonParam)
 	if err != nil {
 		return nil, err
 	}
@@ -379,7 +382,9 @@ func GenerateJSONSchemaFromParameterizedTemplate(parameterizedJSON []byte) ([]by
 	_ = json.Unmarshal(propjson, &src)
 
 	////
-	inputParamSchemaJSONBuf, err := GetSchemaDefinitionFileAsJSONBuf(SchemaFileInputParam)
+	abspath = GetAbsDIRPathGivenRelativePath(SchemaDir) + "/" + SchemaFileInputParam
+	inputParamSchemaJSONBuf, err := GetSchemaDefinitionFileAsJSONBuf(abspath)
+	//inputParamSchemaJSONBuf, err := GetSchemaDefinitionFileAsJSONBuf(SchemaFileInputParam)
 	if err != nil {
 		return nil, err
 	}

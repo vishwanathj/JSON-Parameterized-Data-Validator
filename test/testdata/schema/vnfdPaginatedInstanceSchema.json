@@ -1,0 +1,33 @@
+{
+  "vnfdsPaginatedInstances": {
+    "type": "object",
+    "properties": {
+      "limit": {"type": "integer", "minimum": 1, "maximum": 10, "multipleOf": 1.0},
+      "total_count": {"type": "integer", "minimum": 0, "maximum": 10000, "multipleOf": 1.0},
+      "vnfds": {
+        "type": "array",
+        "minItems": 0,
+        "maxItems": 10,
+        "items": {
+          "type": "object",
+          "$ref": "vnfdDefine.json#/vnfdDefine"
+        }
+      },
+      "first": {
+        "type": "object",
+        "properties": {
+          "href": {"type":  "string", "format": "uri"}
+        }
+      },
+      "next": {
+        "type": "object",
+        "properties": {
+          "href": {"type":  "string", "format": "uri"}
+        }
+      }
+    },
+    "required": ["limit", "total_count", "first"],
+    "optional": ["next", "vnfds"],
+    "additionalProperties": false
+  }
+}
