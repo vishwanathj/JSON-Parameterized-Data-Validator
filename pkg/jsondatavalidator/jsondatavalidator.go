@@ -5,7 +5,6 @@ import (
 	"errors"
 	"io"
 	"io/ioutil"
-	"os"
 	"reflect"
 
 	"github.com/peterbourgon/mergemap"
@@ -21,7 +20,7 @@ import (
 )
 
 // SchemaDir points to the relative path of where the schema files are located
-var SchemaDir string
+//var SchemaDir string
 
 // SchemaInputPath is path to schema file for
 // Parameterized templates
@@ -36,15 +35,15 @@ var SchemaDir string
 //var SchemaPaginatedInstancesRelPath string
 
 // SchemaFileInputParam is name of schema file for input param files
-var SchemaFileInputParam string
+//var SchemaFileInputParam string
 
 // SchemaFileDefineNonParam is name of schema file for non-parameterized templates.
 // This is needed by the GenerateJSONSchemaFromParameterizedTemplate function
-var SchemaFileDefineNonParam string
+//var SchemaFileDefineNonParam string
 
 func init() {
 	log.Debug()
-	localUnitTest := os.Getenv("TEST")
+	/*localUnitTest := os.Getenv("TEST")
 	log.Debug(localUnitTest)
 
 	if localUnitTest == "true" {
@@ -61,7 +60,7 @@ func init() {
 		//SchemaPaginatedInstancesRelPath = "/usr/share/vnfdservice/schema/vnfdPaginatedInstanceSchema.json#/vnfdsPaginatedInstances"
 		SchemaFileInputParam = "inputParam.json"
 		SchemaFileDefineNonParam = "vnfdDefineNonParam.json"
-	}
+	}*/
 }
 
 const (
@@ -409,8 +408,6 @@ func (resmap *SearchResults) ParseArray(anArray []interface{}) {
 	}
 }
 
-
-
 // GenerateJSONSchemaFromParameterizedTemplate generated a dynamic schema
 // by parsing the template for parameterized variables and looking up
 // allowable values for those parameterized variables.
@@ -508,5 +505,3 @@ func createSchemaForInputParamsFromParameterizedProperties(m map[string]interfac
 
 	return propjson
 }
-
-
