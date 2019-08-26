@@ -9,6 +9,8 @@ import (
 	"github.com/ghodss/yaml"
 	"github.com/vishwanathj/JSON-Parameterized-Data-Validator/pkg/jsondatavalidator"
 	"io/ioutil"
+	"log"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -1016,6 +1018,35 @@ func TestValidateJSONBufAgainstSchema_Negative_InvalidURL(t *testing.T) {
 		t.Log(err)
 	} else {
 		t.Fail()
+	}
+}
+
+func TestGetSchemaStringWhenGivenFilePath(t *testing.T) {
+
+	var dir string
+	dir, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+		t.Errorf("Fatal error: %s", err)
+	}
+	parent := filepath.Dir(dir)
+
+	testTable := [] struct{
+		inputPath      string
+		expectedOutput string
+	} {
+		{"schema/vnfdInstanceSchema.json#/vnfdInstance", `{"$ref": "` + "schema/vnfdInstanceSchema.json#/vnfdInstance" + `"}`},
+		{"../schema/vnfdInstanceSchema.json#/vnfdInstance", `{"$ref": "` + parent + "/" + "schema/vnfdInstanceSchema.json#/vnfdInstance" + `"}`},
+		{"", `{"$ref": ""}`},
+	}
+	for _, tdr := range testTable {
+		res := jsondatavalidator.GetSchemaStringWhenGivenFilePath(tdr.inputPath)
+
+
+		if (res != tdr.expectedOutput) {
+			fmt.Println(res)
+			t.Errorf("Output %s incorrect", tdr.expectedOutput)
+		}
 	}
 }
 

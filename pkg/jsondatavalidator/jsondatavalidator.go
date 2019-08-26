@@ -31,7 +31,7 @@ import (
 //var SchemaParameterizedInstanceRelPath string
 
 // SchemaPaginatedInstancesRelPath is path to schema file
-// for paginated output structure
+// for paginated expectedOutput structure
 //var SchemaPaginatedInstancesRelPath string
 
 // SchemaFileInputParam is name of schema file for input param files
