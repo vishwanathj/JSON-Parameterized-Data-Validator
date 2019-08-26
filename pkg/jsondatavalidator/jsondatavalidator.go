@@ -3,6 +3,7 @@ package jsondatavalidator
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"reflect"
@@ -285,18 +286,18 @@ func ValidateJSONBufAgainstSchema(jsonval []byte,
 	err := yaml.Unmarshal(jsonval, &m)
 	if err != nil {
 		log.WithFields(log.Fields{"UnMarshallError": err}).Error()
-		return err
+		return fmt.Errorf("UnMarshallError")
 	}
 	compiler := jsonschema.NewCompiler()
 	//compiler.Draft = jsonschema.Draft4
 	if err := compiler.AddResource(url, schemaDefAsReaderObj); err != nil {
 		log.WithFields(log.Fields{"AddResourceError": err}).Error()
-		return err
+		return fmt.Errorf("AddResourceError")
 	}
 	schema, err := compiler.Compile(url)
 	if err != nil {
 		log.WithFields(log.Fields{"CompileError": err}).Error()
-		return err
+		return fmt.Errorf("CompilerError")
 	}
 
 	if zerr := schema.ValidateInterface(m); zerr != nil {

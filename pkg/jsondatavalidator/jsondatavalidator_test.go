@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/ghodss/yaml"
 	"github.com/vishwanathj/JSON-Parameterized-Data-Validator/pkg/jsondatavalidator"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -918,6 +919,27 @@ func TestNegative_ValidateInputParamAgainstParameterizedVnfd(t *testing.T) {
 		}
 	}
 }
+
+func TestValidateJSONBufAgainstSchema_Negative_InvalidJSON(t *testing.T) {
+	malformedJson := []byte(`{"key":`)
+	err := jsondatavalidator.ValidateJSONBufAgainstSchema(malformedJson, strings.NewReader("dummy"), "d")
+	if err != nil {
+		t.Log(err)
+	} else {
+		t.Fail()
+	}
+}
+
+func TestValidateJSONBufAgainstSchema_Negative_InvalidURL(t *testing.T) {
+	jsonval := []byte(`{"key": "val"}`)
+	err := jsondatavalidator.ValidateJSONBufAgainstSchema(jsonval, strings.NewReader("dummy"), "d")
+	if err != nil {
+		t.Log(err)
+	} else {
+		t.Fail()
+	}
+}
+
 */
 
 func TestGenerateJSONSchemaFromNonParameterizedVNFDTemplate_Positive(t *testing.T) {
@@ -1001,23 +1023,24 @@ func TestPositive_GetEntireLinesFromJSONSchemaFile_WhenStringMatched_FromJSONBuf
 	}
 }
 
-func TestValidateJSONBufAgainstSchema_Negative_InvalidJSON(t *testing.T) {
-	malformedJson := []byte(`{"key":`)
-	err := jsondatavalidator.ValidateJSONBufAgainstSchema(malformedJson, strings.NewReader("dummy"), "d")
-	if err != nil {
-		t.Log(err)
-	} else {
-		t.Fail()
-	}
-}
 
-func TestValidateJSONBufAgainstSchema_Negative_InvalidURL(t *testing.T) {
-	jsonval := []byte(`{"key": "val"}`)
-	err := jsondatavalidator.ValidateJSONBufAgainstSchema(jsonval, strings.NewReader("dummy"), "d")
-	if err != nil {
-		t.Log(err)
-	} else {
-		t.Fail()
+func TestValidateJSONBufAgainstSchema(t *testing.T) {
+	testTable := [] struct{
+		description 			string
+		jsonval 				[]byte
+		schemaDefAsReaderObj 	io.Reader
+		url 					string
+		expectedOutput			error
+	}{
+		{"Invalid URL", []byte(`{"key": "val"}`), strings.NewReader("dummy"), "d", fmt.Errorf("AddResourceError")},
+		{"Malformed JSON", []byte(`{"key":`), strings.NewReader("dummy"), "d",  fmt.Errorf("UnMarshallError")},
+		//{"Valid JSON", []byte(`{"key": "val"}`), strings.NewReader("dummy"), "valid.json", nil},
+	}
+	for _, tdr:= range testTable{
+		err := jsondatavalidator.ValidateJSONBufAgainstSchema(tdr.jsonval, tdr.schemaDefAsReaderObj, tdr.url)
+		if err.Error() != tdr.expectedOutput.Error() {
+			t.Errorf("%s", tdr.expectedOutput)
+		}
 	}
 }
 
@@ -1037,14 +1060,14 @@ func TestGetSchemaStringWhenGivenFilePath(t *testing.T) {
 	} {
 		{"schema/vnfdInstanceSchema.json#/vnfdInstance", `{"$ref": "` + "schema/vnfdInstanceSchema.json#/vnfdInstance" + `"}`},
 		{"../schema/vnfdInstanceSchema.json#/vnfdInstance", `{"$ref": "` + parent + "/" + "schema/vnfdInstanceSchema.json#/vnfdInstance" + `"}`},
+		{"/tmp/vnfdInstanceSchema.json#/vnfdInstance", `{"$ref": "` + "/tmp/vnfdInstanceSchema.json#/vnfdInstance" + `"}`},
+		{"/tmp/vnfdInstanceSchema.json", `{"$ref": "` + "/tmp/vnfdInstanceSchema.json" + `"}`},
 		{"", `{"$ref": ""}`},
 	}
 	for _, tdr := range testTable {
 		res := jsondatavalidator.GetSchemaStringWhenGivenFilePath(tdr.inputPath)
 
-
 		if (res != tdr.expectedOutput) {
-			fmt.Println(res)
 			t.Errorf("Output %s incorrect", tdr.expectedOutput)
 		}
 	}
