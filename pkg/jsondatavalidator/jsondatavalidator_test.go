@@ -548,7 +548,7 @@ func TestInValidParameterizedInstanceYaml(t *testing.T) {
 
 		}
 	}
-}*/
+}
 
 func TestPositiveGetRegexMatchingListFromJSONBuff(t *testing.T) {
 	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Input)
@@ -567,44 +567,6 @@ func TestPositiveGetRegexMatchingListFromJSONBuff(t *testing.T) {
 			if filepath.Ext(f.Name()) == ".json" || filepath.Ext(f.Name()) == ".yaml" {
 				fmt.Println(f.Name())
 				//yamlText, err := ioutil.ReadFile(gopath+BASE_DIR_VALID_Parameterized_Input + f.Name())
-				yamlText, err := ioutil.ReadFile(bpath + "/" + f.Name())
-				if err != nil {
-					t.Error("Error while reading VNFD File # ", err)
-					// if file read fail the continue to next file.
-					panic(err)
-					t.Fail()
-				}
-
-				// The regexp looks for the $ anywhere in the line
-
-				lst := jsondatavalidator.GetRegexMatchingListFromJSONBuff(yamlText, rxp)
-				if len(lst) != 0 {
-					t.Log(lst, len(lst))
-				} else {
-					t.Errorf("FAILED")
-				}
-			}
-		}
-	}
-
-}
-
-func TestPositive_GetEntireLinesFromYAMLFile_WhenRegexMatched_FromJSONBuff(t *testing.T) {
-	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Input)
-	files, err := ioutil.ReadDir(bpath)
-	fmt.Println("len:=", len(files))
-	fmt.Println(bpath)
-
-	// The regexp looks for the $ anywhere in the line and returns the entire line
-	validRegexList := [...]string{`.*\$.*`}
-
-	if err != nil {
-		t.Fatal(err)
-	}
-	for _, rxp := range validRegexList {
-		for _, f := range files {
-			if filepath.Ext(f.Name()) == ".json" || filepath.Ext(f.Name()) == ".yaml" {
-				fmt.Println(f.Name())
 				yamlText, err := ioutil.ReadFile(bpath + "/" + f.Name())
 				if err != nil {
 					t.Error("Error while reading VNFD File # ", err)
@@ -659,6 +621,83 @@ func TestNegative_GetRegexMatching_List_FromJSONBuff(t *testing.T) {
 	}
 }
 
+func TestPositive_GetEntireLinesFromJSONSchemaFile_WhenStringMatched_FromJSONBuff(t *testing.T) {
+	//bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(jsondatavalidator.SchemaDir)
+	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(SchemaDir)
+	files, err := ioutil.ReadDir(bpath)
+	fmt.Println("len:=", len(files))
+	fmt.Println(bpath)
+
+	// The regexp looks for the $ anywhere in the line and returns the entire line
+	validRegexList := [...]string{`name`, `high_availability`, `image`, `memory`, `maximum`, `minimum`, `disk_size`, `vcpus`, `is_management`, `default`, `ip_address`}
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for _, rxp := range validRegexList {
+		for _, f := range files {
+			if filepath.Ext(f.Name()) == ".json" {
+				fmt.Println(f.Name())
+				yamlText, err := ioutil.ReadFile(bpath + "/" + f.Name())
+				if err != nil {
+					t.Error("Error while reading VNFD File # ", err)
+					// if file read fail the continue to next file.
+					panic(err)
+					t.Fail()
+				}
+
+				// The regexp looks for the $ anywhere in the line
+
+				lst := jsondatavalidator.GetRegexMatchingListFromJSONBuff(yamlText, `.*`+rxp+`.*`)
+				if len(lst) != 0 {
+					fmt.Println(lst)
+					t.Log(lst, len(lst))
+				}
+			}
+		}
+	}
+}
+
+func TestPositive_GetEntireLinesFromYAMLFile_WhenRegexMatched_FromJSONBuff(t *testing.T) {
+	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Input)
+	files, err := ioutil.ReadDir(bpath)
+	fmt.Println("len:=", len(files))
+	fmt.Println(bpath)
+
+	// The regexp looks for the $ anywhere in the line and returns the entire line
+	validRegexList := [...]string{`.*\$.*`}
+
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, rxp := range validRegexList {
+		for _, f := range files {
+			if filepath.Ext(f.Name()) == ".json" || filepath.Ext(f.Name()) == ".yaml" {
+				fmt.Println(f.Name())
+				yamlText, err := ioutil.ReadFile(bpath + "/" + f.Name())
+				if err != nil {
+					t.Error("Error while reading VNFD File # ", err)
+					// if file read fail the continue to next file.
+					panic(err)
+					t.Fail()
+				}
+
+				// The regexp looks for the $ anywhere in the line
+
+				lst := jsondatavalidator.GetRegexMatchingListFromJSONBuff(yamlText, rxp)
+				if len(lst) != 0 {
+					t.Log(lst, len(lst))
+				} else {
+					t.Errorf("FAILED")
+				}
+			}
+		}
+	}
+}
+
+*/
+
 /*
 func TestParse_NestedMap_ToObtain_LeafKeyValues(t *testing.T) {
 	bpath := GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Input)
@@ -705,124 +744,6 @@ func TestParse_NestedMap_ToObtain_LeafKeyValues(t *testing.T) {
 		}
 	}
 }*/
-
-func TestPositive_Parse_NestedJSONSchema_ToObtain_Values_GivenAKey(t *testing.T) {
-	//bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(jsondatavalidator.SchemaDir)
-	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(SchemaDir)
-	files, err := ioutil.ReadDir(bpath)
-	fmt.Println("len:=", len(files))
-	fmt.Println(bpath)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	yamlText, err := ioutil.ReadFile(bpath + "/" + "vnfdDefine.json")
-	//yamlText, err := ioutil.ReadFile(bpath + "/" + "nonParameterizedVnfdDefine.json")
-	//yamlText, err := ioutil.ReadFile(bpath +"/" + "parameterizedVnfdDefine.json")
-	if err != nil {
-		t.Error("Error while reading VNFD File # ", err)
-		// if file read fail the continue to next file.
-		panic(err)
-		t.Fail()
-	}
-
-	//patternList := []string{"connection_point", "constraints", "scale_in_out", "vdu", "vnfc", "virtual_link"}
-	patternList := []string{"vcpus", "ip_address", "dedicated", "vim_id", "high_availability", "memory", "disk_size", "image", "default", "maximum", "minimum"}
-
-	var m map[string]interface{}
-	yaml.Unmarshal(yamlText, &m)
-
-	for _, elem := range patternList {
-		pvm := jsondatavalidator.NewSearchResults(jsondatavalidator.MatchKey, elem)
-		pvm.ParseMap(m)
-
-		if len(pvm.Results) == 0 {
-			t.Fail()
-		} else {
-			t.Log(elem)
-			t.Log(len(pvm.Results))
-			t.Log(pvm.Results)
-		}
-	}
-}
-
-func TestPositive_Parse_NestedJSONSchema_ToObtain_Key_GivenValue(t *testing.T) {
-	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Input)
-	files, err := ioutil.ReadDir(bpath)
-	fmt.Println("len:=", len(files))
-	fmt.Println(bpath)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	for _, f := range files {
-		if filepath.Ext(f.Name()) == ".json" || filepath.Ext(f.Name()) == ".yaml" {
-			fmt.Println(f.Name())
-			yamlText, err := ioutil.ReadFile(bpath + "/" + f.Name())
-			if err != nil {
-				t.Error("Error while reading VNFD File # ", err)
-				// if file read fail the continue to next file.
-				panic(err)
-				t.Fail()
-			}
-
-			var m map[string]interface{}
-			yaml.Unmarshal(yamlText, &m)
-			pvm := jsondatavalidator.NewSearchResults(jsondatavalidator.MatchValue, `\$.*`)
-			pvm.ParseMap(m)
-
-			if len(pvm.Results) == 0 {
-				t.Fail()
-			} else {
-				t.Log(len(pvm.Results))
-				t.Log(pvm.Results)
-			}
-		}
-	}
-}
-
-func TestGenerateJSONSchemaFromParameterizedTemplate_Positive(t *testing.T) {
-	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Input)
-	files, err := ioutil.ReadDir(bpath)
-	fmt.Println("len:=", len(files))
-	fmt.Println(bpath)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	yamlText, err := ioutil.ReadFile(bpath + "/" + "validParameterizedVNFDInputWithOptionalPropConstraintsMissing.yaml")
-	if err != nil {
-		t.Error("Error while reading VNFD File # ", err)
-		// if file read fail the continue to next file.
-		panic(err)
-		t.Fail()
-	}
-
-	abspath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(SchemaDir) + "/" + SchemaFileDefineNonParam
-	nonParamDefineJSONBuf, err := jsondatavalidator.GetSchemaDefinitionFileAsJSONBuf(abspath)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	abspath = jsondatavalidator.GetAbsDIRPathGivenRelativePath(SchemaDir) + "/" + SchemaFileInputParam
-	inputParamSchemaJSONBuf, err := jsondatavalidator.GetSchemaDefinitionFileAsJSONBuf(abspath)
-	//inputParamSchemaJSONBuf, err := GetSchemaDefinitionFileAsJSONBuf(SchemaFileInputParam)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	//r, e := jsondatavalidator.GenerateJSONSchemaFromParameterizedTemplate(yamlText)
-	r, e := jsondatavalidator.GenerateJSONSchemaFromParameterizedTemplate(yamlText, nonParamDefineJSONBuf, inputParamSchemaJSONBuf)
-
-	if e != nil {
-		t.Fatal(e)
-	} else {
-		t.Log(string(r))
-	}
-}
 
 /*
 func TestPositive_ValidateInputParamAgainstParameterizedVnfd(t *testing.T) {
@@ -942,6 +863,48 @@ func TestValidateJSONBufAgainstSchema_Negative_InvalidURL(t *testing.T) {
 
 */
 
+/*
+func TestGenerateJSONSchemaFromParameterizedTemplate_Positive(t *testing.T) {
+	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Input)
+	files, err := ioutil.ReadDir(bpath)
+	fmt.Println("len:=", len(files))
+	fmt.Println(bpath)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	yamlText, err := ioutil.ReadFile(bpath + "/" + "validParameterizedVNFDInputWithOptionalPropConstraintsMissing.yaml")
+	if err != nil {
+		t.Error("Error while reading VNFD File # ", err)
+		// if file read fail the continue to next file.
+		panic(err)
+		t.Fail()
+	}
+
+	abspath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(SchemaDir) + "/" + SchemaFileDefineNonParam
+	nonParamDefineJSONBuf, err := jsondatavalidator.GetSchemaDefinitionFileAsJSONBuf(abspath)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	abspath = jsondatavalidator.GetAbsDIRPathGivenRelativePath(SchemaDir) + "/" + SchemaFileInputParam
+	inputParamSchemaJSONBuf, err := jsondatavalidator.GetSchemaDefinitionFileAsJSONBuf(abspath)
+	//inputParamSchemaJSONBuf, err := GetSchemaDefinitionFileAsJSONBuf(SchemaFileInputParam)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	//r, e := jsondatavalidator.GenerateJSONSchemaFromParameterizedTemplate(yamlText)
+	r, e := jsondatavalidator.GenerateJSONSchemaFromParameterizedTemplate(yamlText, nonParamDefineJSONBuf, inputParamSchemaJSONBuf)
+
+	if e != nil {
+		t.Fatal(e)
+	} else {
+		t.Log(string(r))
+	}
+}
+
 func TestGenerateJSONSchemaFromNonParameterizedVNFDTemplate_Positive(t *testing.T) {
 	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_NonParameterized_Input)
 	files, err := ioutil.ReadDir(bpath)
@@ -982,47 +945,170 @@ func TestGenerateJSONSchemaFromNonParameterizedVNFDTemplate_Positive(t *testing.
 		t.Log(string(r))
 	}
 }
+*/
 
-func TestPositive_GetEntireLinesFromJSONSchemaFile_WhenStringMatched_FromJSONBuff(t *testing.T) {
+func TestGetRegexMatchingListFromJSONBuff(t *testing.T) {
+	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Input)
+	files, err := ioutil.ReadDir(bpath)
+	//fmt.Println("len:=", len(files))
+	//fmt.Println(bpath)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	testTable := [] struct {
+		description 	string
+		regExInput  	string
+		emptyList		bool
+	} {
+		{"look for $ anywhere in the line and returns substring from point of match", `\$[A-Za-z][-A-Za-z0-9_]*`, false},
+		{"look for $ anywhere in the line and returns entire line", `.*\$.*`, false},
+		{"look for $ beginning of line and returns substring from point of match", `^\$[A-Za-z][-A-Za-z0-9_]*`, true},
+	}
+	for i, tc := range testTable {
+		t.Run(fmt.Sprintf("%d:%s", i, tc.description), func(t *testing.T) {
+			for _, f := range files {
+				if filepath.Ext(f.Name()) == ".json" || filepath.Ext(f.Name()) == ".yaml" {
+					//fmt.Println(f.Name())
+					yamlText, err := ioutil.ReadFile(bpath + "/" + f.Name())
+					if err != nil {
+						t.Error("Error while reading VNFD File # ", err)
+						// if file read fail the continue to next file.
+						panic(err)
+						t.Fail()
+					}
+
+					lst := jsondatavalidator.GetRegexMatchingListFromJSONBuff(yamlText, tc.regExInput)
+					if tc.emptyList == true && len(lst) != 0 {
+						t.Fatal("Error: Expected NO Match to be found for the regexp")
+					} else if tc.emptyList == false && len(lst) == 0 {
+						t.Fatal("Error: Expected to find Matches for the regexp")
+					}
+				}
+			}
+		})
+
+	}
+}
+
+func TestPositive_Parse_NestedJSONSchema_ToObtain_Values_GivenAKey(t *testing.T) {
 	//bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(jsondatavalidator.SchemaDir)
 	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(SchemaDir)
 	files, err := ioutil.ReadDir(bpath)
 	fmt.Println("len:=", len(files))
 	fmt.Println(bpath)
 
-	// The regexp looks for the $ anywhere in the line and returns the entire line
-	validRegexList := [...]string{`name`, `high_availability`, `image`, `memory`, `maximum`, `minimum`, `disk_size`, `vcpus`, `is_management`, `default`, `ip_address`}
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	yamlText, err := ioutil.ReadFile(bpath + "/" + "vnfdDefine.json")
+	//yamlText, err := ioutil.ReadFile(bpath + "/" + "nonParameterizedVnfdDefine.json")
+	//yamlText, err := ioutil.ReadFile(bpath +"/" + "parameterizedVnfdDefine.json")
+	if err != nil {
+		t.Error("Error while reading VNFD File # ", err)
+		// if file read fail the continue to next file.
+		panic(err)
+		t.Fail()
+	}
+
+	//patternList := []string{"connection_point", "constraints", "scale_in_out", "vdu", "vnfc", "virtual_link"}
+	patternList := []string{"vcpus", "ip_address", "dedicated", "vim_id", "high_availability", "memory", "disk_size", "image", "default", "maximum", "minimum"}
+
+	var m map[string]interface{}
+	yaml.Unmarshal(yamlText, &m)
+
+	for _, elem := range patternList {
+		pvm := jsondatavalidator.NewSearchResults(jsondatavalidator.MatchKey, elem)
+		pvm.ParseMap(m)
+
+		if len(pvm.Results) == 0 {
+			t.Fail()
+		} else {
+			t.Log(elem)
+			t.Log(len(pvm.Results))
+			t.Log(pvm.Results)
+		}
+	}
+}
+
+func TestPositive_Parse_NestedJSONSchema_ToObtain_Key_GivenValue(t *testing.T) {
+	bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(BASE_DIR_VALID_Parameterized_Input)
+	files, err := ioutil.ReadDir(bpath)
+	fmt.Println("len:=", len(files))
+	fmt.Println(bpath)
 
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	for _, rxp := range validRegexList {
-		for _, f := range files {
-			if filepath.Ext(f.Name()) == ".json" {
-				fmt.Println(f.Name())
-				yamlText, err := ioutil.ReadFile(bpath + "/" + f.Name())
-				if err != nil {
-					t.Error("Error while reading VNFD File # ", err)
-					// if file read fail the continue to next file.
-					panic(err)
-					t.Fail()
-				}
+	for _, f := range files {
+		if filepath.Ext(f.Name()) == ".json" || filepath.Ext(f.Name()) == ".yaml" {
+			fmt.Println(f.Name())
+			yamlText, err := ioutil.ReadFile(bpath + "/" + f.Name())
+			if err != nil {
+				t.Error("Error while reading VNFD File # ", err)
+				// if file read fail the continue to next file.
+				panic(err)
+				t.Fail()
+			}
 
-				// The regexp looks for the $ anywhere in the line
+			var m map[string]interface{}
+			yaml.Unmarshal(yamlText, &m)
+			pvm := jsondatavalidator.NewSearchResults(jsondatavalidator.MatchValue, `\$.*`)
+			pvm.ParseMap(m)
 
-				lst := jsondatavalidator.GetRegexMatchingListFromJSONBuff(yamlText, `.*`+rxp+`.*`)
-				if len(lst) != 0 {
-					fmt.Println(lst)
-					t.Log(lst, len(lst))
-				} /*else {
-					t.Errorf("FAILED")
-				}*/
+			if len(pvm.Results) == 0 {
+				t.Fail()
+			} else {
+				t.Log(len(pvm.Results))
+				t.Log(pvm.Results)
 			}
 		}
 	}
 }
 
+func TestGenerateJSONSchemaFromParameterizedTemplate(t *testing.T) {
+
+	testTable := [] struct{
+		description 			string
+		baseDir					string
+		fileName 				string
+		expectedErr 			error
+	}{
+		{"Parameterized Template test", BASE_DIR_VALID_Parameterized_Input, "validParameterizedVNFDInputWithOptionalPropConstraintsMissing.yaml", nil},
+		{"Non Parameterized Template test", BASE_DIR_VALID_NonParameterized_Input, "validNonParameterizedVNFDInputWithOptionalPropConstraintsMissing.yaml", nil},
+	}
+
+	for i, tdr := range testTable {
+		t.Run(fmt.Sprintf("%d:%s", i, tdr.description), func(t *testing.T) {
+			bpath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(tdr.baseDir)
+			yamlText, err := ioutil.ReadFile(bpath + "/" + tdr.fileName)
+			if err != nil {
+				t.Error("Error while reading File # ", err)
+				panic(err)
+				t.Fail()
+			}
+			abspath := jsondatavalidator.GetAbsDIRPathGivenRelativePath(SchemaDir) + "/" + SchemaFileDefineNonParam
+			nonParamDefineJSONBuf, err := jsondatavalidator.GetSchemaDefinitionFileAsJSONBuf(abspath)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			abspath = jsondatavalidator.GetAbsDIRPathGivenRelativePath(SchemaDir) + "/" + SchemaFileInputParam
+			inputParamSchemaJSONBuf, err := jsondatavalidator.GetSchemaDefinitionFileAsJSONBuf(abspath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			r, e := jsondatavalidator.GenerateJSONSchemaFromParameterizedTemplate(yamlText, nonParamDefineJSONBuf, inputParamSchemaJSONBuf)
+
+			if r == nil && tdr.expectedErr != e {
+				t.Fatal("ERROR: JSONSchema failed to be generated.")
+			}
+		})
+	}
+}
 
 func TestValidateJSONBufAgainstSchema(t *testing.T) {
 	testTable := [] struct{
@@ -1036,11 +1122,14 @@ func TestValidateJSONBufAgainstSchema(t *testing.T) {
 		{"Malformed JSON", []byte(`{"key":`), strings.NewReader("dummy"), "d",  fmt.Errorf("UnMarshallError")},
 		//{"Valid JSON", []byte(`{"key": "val"}`), strings.NewReader("dummy"), "valid.json", nil},
 	}
-	for _, tdr:= range testTable{
-		err := jsondatavalidator.ValidateJSONBufAgainstSchema(tdr.jsonval, tdr.schemaDefAsReaderObj, tdr.url)
-		if err.Error() != tdr.expectedOutput.Error() {
-			t.Errorf("%s", tdr.expectedOutput)
-		}
+	for i, tdr := range testTable{
+		t.Run(fmt.Sprintf("%d:%s", i, tdr.description), func(t *testing.T) {
+			err := jsondatavalidator.ValidateJSONBufAgainstSchema(tdr.jsonval, tdr.schemaDefAsReaderObj, tdr.url)
+			if err.Error() != tdr.expectedOutput.Error() {
+				t.Errorf("%s", tdr.expectedOutput)
+			}
+		})
+
 	}
 }
 
@@ -1064,12 +1153,15 @@ func TestGetSchemaStringWhenGivenFilePath(t *testing.T) {
 		{"/tmp/vnfdInstanceSchema.json", `{"$ref": "` + "/tmp/vnfdInstanceSchema.json" + `"}`},
 		{"", `{"$ref": ""}`},
 	}
-	for _, tdr := range testTable {
-		res := jsondatavalidator.GetSchemaStringWhenGivenFilePath(tdr.inputPath)
+	for i, tdr := range testTable {
+		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
+			res := jsondatavalidator.GetSchemaStringWhenGivenFilePath(tdr.inputPath)
 
-		if (res != tdr.expectedOutput) {
-			t.Errorf("Output %s incorrect", tdr.expectedOutput)
-		}
+			if (res != tdr.expectedOutput) {
+				t.Errorf("Output %s incorrect", tdr.expectedOutput)
+			}
+		})
+
 	}
 }
 
