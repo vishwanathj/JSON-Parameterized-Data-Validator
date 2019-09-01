@@ -284,6 +284,9 @@ func ValidateJSONBufAgainstSchema(jsonval []byte,
 	log.Debug()
 	var m interface{}
 	err := yaml.Unmarshal(jsonval, &m)
+	//r, err := yaml.YAMLToJSON(jsonval)
+	//nr := strings.NewReader(string(r))
+	//m, err = jsonschema.DecodeJSON(nr)
 	if err != nil {
 		log.WithFields(log.Fields{"UnMarshallError": err}).Error()
 		return fmt.Errorf("UnMarshallError")
