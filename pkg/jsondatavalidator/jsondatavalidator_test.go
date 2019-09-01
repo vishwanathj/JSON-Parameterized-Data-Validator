@@ -6,15 +6,16 @@ package jsondatavalidator_test
 
 import (
 	"fmt"
-	"github.com/vishwanathj/JSON-Parameterized-Data-Validator/pkg/jsondatavalidator"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/ghodss/yaml"
+	"github.com/vishwanathj/JSON-Parameterized-Data-Validator/pkg/jsondatavalidator"
 )
 
 // SchemaDir points to the relative path of where the schema files are located
@@ -28,6 +29,7 @@ var SchemaFileInputParam = "inputParam.json"
 var SchemaFileDefineNonParam = "vnfdDefineNonParam.json"
 
 var BASE_DIR = "../../test/testdata/yamlfiles/"
+
 //var BASE_DIR_VALID_Parameterized_Input = "../../test/testdata/yamlfiles/valid/parameterizedInput/"
 var BASE_DIR_VALID_Parameterized_Input = BASE_DIR + "valid/parameterizedInput/"
 var BASE_DIR_VALID_Parameterized_Instance = BASE_DIR + "valid/parameterizedInstance/"
@@ -40,14 +42,14 @@ var BASE_DIR_INVALID_Input_Param = BASE_DIR + "invalid/inputParam/"
 var BASE_DIR_VALID_Paginated = BASE_DIR + "valid/parameterizedPaginatedInstances/"
 var BASE_DIR_INVALID_Paginated = BASE_DIR + "invalid/parameterizedPaginatedInstances/"
 
-var testJSONSchema = []byte(`
+var testJSONParamNonParamSchema = []byte(`
 {
   "vmDeviceDefine": {
     "vm": {
       "additionalProperties": false, 
       "type": "object", 
       "required": [
-        "name", "vcpus"
+        "vcpus"
       ], 
       "optional": [
         "memory"
@@ -66,11 +68,7 @@ var testJSONSchema = []byte(`
               "multipleOf": 2.0
             }
           ]
-        }, 
-        "name": {
-          "pattern": "^[A-Za-z][-A-Za-z0-9_]*$", 
-          "type": "string"
-        }, 
+        },
         "memory": {
           "oneOf": [
             {
@@ -91,47 +89,106 @@ var testJSONSchema = []byte(`
 }
 `)
 
-/*
-var testJSONSchema = []byte(`
+var testJSONNonParamSchema = []byte(`
 {
+  "vmDeviceDefine": {
     "vm": {
       "additionalProperties": false, 
       "type": "object", 
       "required": [
-        "name", "vcpus"
+        "vcpus"
       ], 
       "optional": [
         "memory"
       ], 
       "properties": {
         "vcpus": {
-          "oneOf": [
-            {
-              "pattern": "^\\$[A-Za-z][-A-Za-z0-9_]*$", 
-              "type": "string"
-            }, 
-            {
-              "minimum": 2, 
-              "type": "integer", 
-              "maximum": 16, 
-              "multipleOf": 2.0
-            }
-          ]
+          "minimum": 2, 
+          "type": "integer", 
+          "maximum": 16, 
+          "multipleOf": 2
         }, 
         "name": {
           "pattern": "^[A-Za-z][-A-Za-z0-9_]*$", 
           "type": "string"
         }, 
         "memory": {
+          "minimum": 512, 
+          "type": "integer", 
+          "maximum": 16384, 
+          "multipleOf": 512
+        }
+      }
+    }
+  }
+}
+`)
+
+var testInputParamJSONSchema = []byte(
+`
+{
+  "inputParam": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "pattern": "^[A-Za-z][-A-Za-z0-9_]*$"
+      },
+      "vnfd_id": {
+        "type": "string",
+        "pattern": "^VM-[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+      }
+    },
+    "required": [
+      "name",
+      "vnfd_id"
+    ],
+    "additionalProperties": false
+  }
+}
+`)
+
+/*
+var testJSONParamNonParamSchema = []byte(`
+{
+    "vm": {
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "name", "vcpus"
+      ],
+      "optional": [
+        "memory"
+      ],
+      "properties": {
+        "vcpus": {
           "oneOf": [
             {
-              "pattern": "^\\$[A-Za-z][-A-Za-z0-9_]*$", 
+              "pattern": "^\\$[A-Za-z][-A-Za-z0-9_]*$",
               "type": "string"
-            }, 
+            },
             {
-              "minimum": 512, 
-              "type": "integer", 
-              "maximum": 16384, 
+              "minimum": 2,
+              "type": "integer",
+              "maximum": 16,
+              "multipleOf": 2.0
+            }
+          ]
+        },
+        "name": {
+          "pattern": "^[A-Za-z][-A-Za-z0-9_]*$",
+          "type": "string"
+        },
+        "memory": {
+          "oneOf": [
+            {
+              "pattern": "^\\$[A-Za-z][-A-Za-z0-9_]*$",
+              "type": "string"
+            },
+            {
+              "minimum": 512,
+              "type": "integer",
+              "maximum": 16384,
               "multipleOf": 512
             }
           ]
@@ -141,14 +198,21 @@ var testJSONSchema = []byte(`
 }
 `)*/
 
-var testValidAllPropsNameParameterizedData = []byte(
+var testValidAllPropsNonParameterizedData = []byte(
 `
 {
   "vm": {
-    "cp": 3,  
+    "vcpus": 3,  
     "memory": 1024
   }
 }
+`)
+
+var testValidAllPropsParameterizedData = []byte(
+`
+vm:
+  vcpus: "$vcpus"
+  memory: "$memory"
 `)
 
 var testJSONData = []byte(`
@@ -163,12 +227,12 @@ var testJSONData = []byte(`
 `)
 
 func TestGetRegexMatchingListFromJSONBuff(t *testing.T) {
-	testTable := [] struct {
-		description 	string
-		regExInput  	string
-		expectedOutput	[]string
-		testData		[]byte
-	} {
+	testTable := []struct {
+		description    string
+		regExInput     string
+		expectedOutput []string
+		testData       []byte
+	}{
 		{"look for $ anywhere in the line and returns substring from point of match", `\$[A-Za-z][-A-Za-z0-9_]*`, []string{"$parameterized_name"}, testJSONData},
 		{"look for $ anywhere in the line and returns entire line", `.*\$.*`, []string{`      "name": "$parameterized_name"`}, testJSONData},
 		{"look for $ beginning of line and returns substring from point of match", `^\$[A-Za-z][-A-Za-z0-9_]*`, nil, testJSONData},
@@ -186,14 +250,14 @@ func TestGetRegexMatchingListFromJSONBuff(t *testing.T) {
 }
 
 func TestNewSearchResults(t *testing.T) {
-	testTable := [] struct{
-		description 	string
-		testData		[]byte
-		paramKeyVal		int
-		paramInput 		string
-		expectedOut		[]string
+	testTable := []struct {
+		description string
+		testData    []byte
+		paramKeyVal int
+		paramInput  string
+		expectedOut []string
 	}{
-		{"Obtain Values Given a Key", testJSONSchema, jsondatavalidator.MatchKey, "vcpus", []string{"pattern"}},
+		{"Obtain Values Given a Key", testJSONParamNonParamSchema, jsondatavalidator.MatchKey, "vcpus", []string{"pattern"}},
 		{"Obtain Key Given a Value", testJSONData, jsondatavalidator.MatchValue, `\$.*`, []string{"name"}},
 	}
 	for i, tdr := range testTable {
@@ -216,12 +280,35 @@ func TestNewSearchResults(t *testing.T) {
 }
 
 func TestGenerateJSONSchemaFromParameterizedTemplate(t *testing.T) {
-
-	testTable := [] struct{
+	testTable := []struct {
 		description 			string
-		baseDir					string
-		fileName 				string
-		expectedErr 			error
+		testJSON 				[]byte
+		nonParamDefineJSONBuf	[]byte
+		inputParamSchemaJSONBuf []byte
+	}{
+		{"Parameterized Template test", testValidAllPropsParameterizedData, testJSONNonParamSchema, testInputParamJSONSchema},
+		{"Non Parameterized Template test", testValidAllPropsNonParameterizedData, testJSONNonParamSchema, testInputParamJSONSchema},
+	}
+
+	for i, tdr := range testTable {
+		t.Run(fmt.Sprintf("%d:%s", i, tdr.description), func(t *testing.T) {
+			r, e := jsondatavalidator.GenerateJSONSchemaFromParameterizedTemplate(tdr.testJSON, tdr.nonParamDefineJSONBuf, tdr.inputParamSchemaJSONBuf)
+			t.Log(string(r))
+			if r == nil && e!= nil {
+				t.Fatal("ERROR: JSONSchema failed to be generated.")
+			}
+		})
+	}
+}
+
+/*
+func TestGenerateJSONSchemaFromParameterizedTemplate(t *testing.T) {
+
+	testTable := []struct {
+		description string
+		baseDir     string
+		fileName    string
+		expectedErr error
 	}{
 		{"Parameterized Template test", BASE_DIR_VALID_Parameterized_Input, "validParameterizedVNFDInputWithOptionalPropConstraintsMissing.yaml", nil},
 		{"Non Parameterized Template test", BASE_DIR_VALID_NonParameterized_Input, "validNonParameterizedVNFDInputWithOptionalPropConstraintsMissing.yaml", nil},
@@ -255,21 +342,22 @@ func TestGenerateJSONSchemaFromParameterizedTemplate(t *testing.T) {
 		})
 	}
 }
+*/
 
 func TestValidateJSONBufAgainstSchema(t *testing.T) {
-	testTable := [] struct{
-		description 			string
-		jsonval 				[]byte
-		schemaDefAsReaderObj 	io.Reader
-		url 					string
-		expectedOutput			error
+	testTable := []struct {
+		description          string
+		jsonval              []byte
+		schemaDefAsReaderObj io.Reader
+		url                  string
+		expectedOutput       error
 	}{
 		{"Invalid URL", []byte(`{"key": "val"}`), strings.NewReader("dummy"), "d", fmt.Errorf("AddResourceError")},
-		{"Malformed JSON", []byte(`{"key":`), strings.NewReader("dummy"), "d",  fmt.Errorf("UnMarshallError")},
-		//{"Valid: Name parameterized with all props", testValidAllPropsNameParameterizedData, strings.NewReader(string(testJSONSchema)), "vmDeviceDefine.json", nil},
+		{"Malformed JSON", []byte(`{"key":`), strings.NewReader("dummy"), "d", fmt.Errorf("UnMarshallError")},
+		//{"Valid: Name parameterized with all props", testValidAllPropsNameParameterizedData, strings.NewReader(string(testJSONParamNonParamSchema)), "vmDeviceDefine.json", nil},
 		//{"Valid JSON", []byte(`{"key": "val"}`), strings.NewReader("dummy"), "valid.json", nil},
 	}
-	for i, tdr := range testTable{
+	for i, tdr := range testTable {
 		t.Run(fmt.Sprintf("%d:%s", i, tdr.description), func(t *testing.T) {
 			err := jsondatavalidator.ValidateJSONBufAgainstSchema(tdr.jsonval, tdr.schemaDefAsReaderObj, tdr.url)
 			if err != nil {
@@ -297,10 +385,10 @@ func TestGetSchemaStringWhenGivenFilePath(t *testing.T) {
 	}
 	parent := filepath.Dir(dir)
 
-	testTable := [] struct{
+	testTable := []struct {
 		inputPath      string
 		expectedOutput string
-	} {
+	}{
 		{"schema/vnfdInstanceSchema.json#/vnfdInstance", `{"$ref": "` + "schema/vnfdInstanceSchema.json#/vnfdInstance" + `"}`},
 		{"../schema/vnfdInstanceSchema.json#/vnfdInstance", `{"$ref": "` + parent + "/" + "schema/vnfdInstanceSchema.json#/vnfdInstance" + `"}`},
 		{"/tmp/vnfdInstanceSchema.json#/vnfdInstance", `{"$ref": "` + "/tmp/vnfdInstanceSchema.json#/vnfdInstance" + `"}`},
@@ -311,7 +399,7 @@ func TestGetSchemaStringWhenGivenFilePath(t *testing.T) {
 		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
 			res := jsondatavalidator.GetSchemaStringWhenGivenFilePath(tdr.inputPath)
 
-			if (res != tdr.expectedOutput) {
+			if res != tdr.expectedOutput {
 				t.Errorf("Output %s incorrect", tdr.expectedOutput)
 			}
 		})
