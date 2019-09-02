@@ -1,4 +1,0 @@
-limit: 5
-total_count: 0
-first:
-  href: http://localhost/vnfds?limit=5

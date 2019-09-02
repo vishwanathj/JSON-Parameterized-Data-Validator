@@ -12,7 +12,7 @@ BUILD_DIR=build/package
 DEPLOYMENT_DIR=deployments/docker-compose
 #https://medium.com/pantomath/go-tools-gitlab-how-to-do-continuous-integration-like-a-boss-941a3a9ad0b6
 PKG_LIST=$(shell go list ./... | grep -v /vendor/)
-TEST_RESULTS_DIR=test/results
+TEST_RESULTS_DIR=test_results
 
 all: deps build unit
 build:
@@ -25,8 +25,6 @@ unit:
 		go tool cover -func=$(TEST_RESULTS_DIR)/coverage_unit.out -o $(TEST_RESULTS_DIR)/func_coverage.out
 display_unit_html:
 		go tool cover -html=$(TEST_RESULTS_DIR)/coverage_unit.out
-display_int_html:
-		go tool cover -html=$(TEST_RESULTS_DIR)/coverage_integration.out
 clean:
 		rm -rf $(TEST_RESULTS_DIR)
 		#$(GOCLEAN)
