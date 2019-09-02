@@ -11,9 +11,7 @@ import (
 	"github.com/peterbourgon/mergemap"
 	log "github.com/sirupsen/logrus"
 
-	"path/filepath"
 	"regexp"
-	"runtime"
 	"strings"
 
 	"github.com/ghodss/yaml"
@@ -78,37 +76,6 @@ func (resmap *SearchResults) UpdateSearchResults(val interface{}) {
 	if !contains(resmap.Results, val) {
 		resmap.Results = append(resmap.Results, val)
 	}
-}
-
-// GetAbsDIRPathGivenRelativePath returns the absolute path on the file system given the
-// relative path from where this function resides
-func GetAbsDIRPathGivenRelativePath(relpath string) string {
-	log.Debug()
-	_, fname, _, _ := runtime.Caller(0)
-	var path string
-	if strings.HasPrefix(relpath, "../") {
-		path = filepath.Join(filepath.Dir(fname), relpath)
-	} else {
-		path = relpath
-	}
-	return path
-}
-
-// GetSchemaStringWhenGivenFilePath generates a string that needs to
-// be passed to the schema validator method when compiling a json schema
-func GetSchemaStringWhenGivenFilePath(relativePathOfJSONSchemaFile string) string {
-	log.Debug()
-	_, fname, _, _ := runtime.Caller(0)
-	var path string
-	if strings.HasPrefix(relativePathOfJSONSchemaFile, "../") {
-		path = filepath.Join(filepath.Dir(fname), relativePathOfJSONSchemaFile)
-	} else {
-		path = relativePathOfJSONSchemaFile
-	}
-
-	var schemaText = `{"$ref": "` + path + `"}`
-	log.Debug(schemaText)
-	return schemaText
 }
 
 // GetSchemaDefinitionFileAsJSONBuf reads a Schema file and returns JSON buf

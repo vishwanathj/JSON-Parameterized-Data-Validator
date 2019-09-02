@@ -7,9 +7,6 @@ package jsondatavalidator_test
 import (
 	"fmt"
 	"io"
-	"log"
-	"os"
-	"path/filepath"
 	"reflect"
 	"strings"
 	"testing"
@@ -236,38 +233,6 @@ func TestValidateJSONBufAgainstSchema(t *testing.T) {
 				t.Log(len(err.Error()))
 				t.Log(len(tdr.expectedOutput.Error()))
 				t.Errorf("%s", tdr.expectedOutput)
-			}
-		})
-
-	}
-}
-
-func TestGetSchemaStringWhenGivenFilePath(t *testing.T) {
-
-	var dir string
-	dir, err := os.Getwd()
-	if err != nil {
-		log.Fatal(err)
-		t.Errorf("Fatal error: %s", err)
-	}
-	parent := filepath.Dir(dir)
-
-	testTable := []struct {
-		inputPath      string
-		expectedOutput string
-	}{
-		{"schema/vnfdInstanceSchema.json#/vnfdInstance", `{"$ref": "` + "schema/vnfdInstanceSchema.json#/vnfdInstance" + `"}`},
-		{"../schema/vnfdInstanceSchema.json#/vnfdInstance", `{"$ref": "` + parent + "/" + "schema/vnfdInstanceSchema.json#/vnfdInstance" + `"}`},
-		{"/tmp/vnfdInstanceSchema.json#/vnfdInstance", `{"$ref": "` + "/tmp/vnfdInstanceSchema.json#/vnfdInstance" + `"}`},
-		{"/tmp/vnfdInstanceSchema.json", `{"$ref": "` + "/tmp/vnfdInstanceSchema.json" + `"}`},
-		{"", `{"$ref": ""}`},
-	}
-	for i, tdr := range testTable {
-		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
-			res := jsondatavalidator.GetSchemaStringWhenGivenFilePath(tdr.inputPath)
-
-			if res != tdr.expectedOutput {
-				t.Errorf("Output %s incorrect", tdr.expectedOutput)
 			}
 		})
 
