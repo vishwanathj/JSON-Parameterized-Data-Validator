@@ -20,48 +20,8 @@ import (
 	"github.com/santhosh-tekuri/jsonschema"
 )
 
-// SchemaDir points to the relative path of where the schema files are located
-//var SchemaDir string
-
-// SchemaInputPath is path to schema file for
-// Parameterized templates
-//var SchemaInputPath string
-
-// SchemaParameterizedInstanceRelPath is path to schema file for
-// instantiated Parameterized templates
-//var SchemaParameterizedInstanceRelPath string
-
-// SchemaPaginatedInstancesRelPath is path to schema file
-// for paginated expectedOutput structure
-//var SchemaPaginatedInstancesRelPath string
-
-// SchemaFileInputParam is name of schema file for input param files
-//var SchemaFileInputParam string
-
-// SchemaFileDefineNonParam is name of schema file for non-parameterized templates.
-// This is needed by the GenerateJSONSchemaFromParameterizedTemplate function
-//var SchemaFileDefineNonParam string
-
 func init() {
 	log.Debug()
-	/*localUnitTest := os.Getenv("TEST")
-	log.Debug(localUnitTest)
-
-	if localUnitTest == "true" {
-		SchemaDir = "../schema/"
-		//SchemaInputPath = "../schema/vnfdInputSchema.json#/vnfdInput"
-		//SchemaParameterizedInstanceRelPath = "../schema/vnfdInstanceSchema.json#/vnfdInstance"
-		//SchemaPaginatedInstancesRelPath = "../schema/vnfdPaginatedInstanceSchema.json#/vnfdsPaginatedInstances"
-		SchemaFileInputParam = "inputParam.json"
-		SchemaFileDefineNonParam = "vnfdDefineNonParam.json"
-	} else {
-		SchemaDir = "/usr/share/vnfdservice/schema/"
-		//SchemaInputPath = "/usr/share/vnfdservice/schema/vnfdInputSchema.json#/vnfdInput"
-		//SchemaParameterizedInstanceRelPath = "/usr/share/vnfdservice/schema/vnfdInstanceSchema.json#/vnfdInstance"
-		//SchemaPaginatedInstancesRelPath = "/usr/share/vnfdservice/schema/vnfdPaginatedInstanceSchema.json#/vnfdsPaginatedInstances"
-		SchemaFileInputParam = "inputParam.json"
-		SchemaFileDefineNonParam = "vnfdDefineNonParam.json"
-	}*/
 }
 
 const (
@@ -169,108 +129,6 @@ func GetSchemaDefinitionFileAsJSONBuf(schemaFileName string) ([]byte, error) {
 
 	return yamlText, err
 }
-
-/* KEEP CODE TILL JUN 2019
-// ValidateVnfdPostBody validates the given JSON body against the parameterized
-// VNFD Input JSON schema "parameterizedVnfdInputSchema.json" for compliance
-func ValidateVnfdPostBody(body []byte) error {
-	log.Debug()
-	var schemaText = GetSchemaStringWhenGivenFilePath(SchemaInputPath)
-	ioReaderObj := strings.NewReader(schemaText)
-	return ValidateJSONBufAgainstSchema(body, ioReaderObj, "vnfdPostBody.json")
-}
-
-// ValidateVnfdInstanceBody validates the given JSON body against the parameterized
-// VNFD Instance JSON schema "parameterizedVnfdInstanceSchema.json" for compliance
-func ValidateVnfdInstanceBody(jsonval []byte) error {
-	log.Debug()
-	var schemaText = GetSchemaStringWhenGivenFilePath(SchemaParameterizedInstanceRelPath)
-	ioReaderObj := strings.NewReader(schemaText)
-	return ValidateJSONBufAgainstSchema(jsonval, ioReaderObj, "vnfdInstanceBody.json")
-}
-
-// ValidatePaginatedVnfdsInstancesBody validates that JSON body returning the
-// Vnfds adhere to the pagination format
-func ValidatePaginatedVnfdsInstancesBody(jsonval []byte) error {
-	log.Debug()
-	var schemaText = GetSchemaStringWhenGivenFilePath(SchemaPaginatedInstancesRelPath)
-	ioReaderObj := strings.NewReader(schemaText)
-	return ValidateJSONBufAgainstSchema(jsonval, ioReaderObj, "vnfdsPaginatedInstancesBody.json")
-}
-
-// ValidateInputParamAgainstParameterizedVnfd validates the given "input_param"
-// JSON file against the dynamically generated JSON Schema
-func ValidateInputParamAgainstParameterizedVnfd(inputParamJSON []byte,
-	parameterizedVnfdJSON []byte) error {
-	log.Debug()
-	inputParamDynSchema, e := GenerateJSONSchemaFromParameterizedTemplate(parameterizedVnfdJSON)
-	if e != nil {
-		return e
-	}
-	data, e := yaml.YAMLToJSON(inputParamDynSchema)
-	if e != nil {
-		return e
-	}
-	fmt.Println(string(data))
-
-	return ValidateJSONBufAgainstSchema(inputParamJSON, strings.NewReader(string(data)), "inputParam.json")
-
-}
-
-// GenerateJSONSchemaFromParameterizedTemplate generated a dynamic schema
-// by parsing the template for parameterized variables and looking up
-// allowable values for those parameterized variables.
-func GenerateJSONSchemaFromParameterizedTemplate(parameterizedJSON []byte) ([]byte, error) {
-	// The regexp looks for the $ anywhere in the line and returns the entire line
-	log.Debug()
-	validRegexList := `.*\$.*`
-
-	slist := GetRegexMatchingListFromJSONBuff(parameterizedJSON, validRegexList)
-	log.WithFields(log.Fields{"RegexMatchingList": slist}).Debug()
-
-	mapParameterizedParamAndDefinition := CreateRevMapStructFromGivenStringListWithSpecifiedSeparator(slist, ":", "-")
-	log.WithFields(log.Fields{"mapParameterizedParamAndDefinition": mapParameterizedParamAndDefinition}).Debug()
-
-	abspath := GetAbsDIRPathGivenRelativePath(SchemaDir) + "/" + SchemaFileDefineNonParam
-	nonParamDefineJSONBuf, err := GetSchemaDefinitionFileAsJSONBuf(abspath)
-	//UNCOMMENT : nonParamDefineJSONBuf, err := GetSchemaDefinitionFileAsJSONBuf(SchemaFileDefineNonParam)
-	if err != nil {
-		return nil, err
-	}
-
-	propjson := createSchemaForInputParamsFromParameterizedProperties(mapParameterizedParamAndDefinition, nonParamDefineJSONBuf)
-
-	var src map[string]interface{}
-	//_ = yaml.Unmarshal(propjson, &src)
-	_ = json.Unmarshal(propjson, &src)
-
-	////
-	abspath = GetAbsDIRPathGivenRelativePath(SchemaDir) + "/" + SchemaFileInputParam
-	inputParamSchemaJSONBuf, err := GetSchemaDefinitionFileAsJSONBuf(abspath)
-	//inputParamSchemaJSONBuf, err := GetSchemaDefinitionFileAsJSONBuf(SchemaFileInputParam)
-	if err != nil {
-		return nil, err
-	}
-	var inputParamSchemaMap map[string]interface{}
-	//_ = yaml.Unmarshal(inputParamSchemaJSONBuf, &inputParamSchemaMap)
-	_ = json.Unmarshal(inputParamSchemaJSONBuf, &inputParamSchemaMap)
-
-	inter := mergemap.Merge(inputParamSchemaMap, src)
-
-	reqjson := createSchemaForInputParamsWithRequiredSection(len(src), mapParameterizedParamAndDefinition)
-	var req map[string]interface{}
-	//_ = yaml.Unmarshal(reqjson, &req)
-	_ = json.Unmarshal(reqjson, &req)
-
-	final := mergemap.Merge(inter, req)
-
-	//r, e := yaml.Marshal(final["inputParam"])
-	r, e := json.Marshal(final["inputParam"])
-	log.Debug(string(r), e)
-	return r, e
-}
-
-*/
 
 // ValidateJSONBufAgainstSchema takes as arguments:
 // i) a json buffer that needs to be validated against a schema
