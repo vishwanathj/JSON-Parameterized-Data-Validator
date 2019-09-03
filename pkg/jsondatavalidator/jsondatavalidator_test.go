@@ -107,14 +107,14 @@ var testInputParamJSONSchema = []byte(
         "type": "string",
         "pattern": "^[A-Za-z][-A-Za-z0-9_]*$"
       },
-      "vnfd_id": {
+      "vm_id": {
         "type": "string",
         "pattern": "^VM-[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
       }
     },
     "required": [
       "name",
-      "vnfd_id"
+      "vm_id"
     ],
     "additionalProperties": false
   }
@@ -179,21 +179,31 @@ func TestNewSearchResults(t *testing.T) {
 }
 
 func TestGenerateJSONSchemaFromParameterizedTemplate(t *testing.T) {
-	var testValidAllPropsNonParameterizedData = []byte(`{"vm": {"vcpus": 4,"memory": 1024}}`)
-	var testValidAllPropsParameterizedData = []byte(`"vm": {"vcpus": "$vcpus","memory": "$memory"}}`)
+	var testValidAllPropsNonParameterizedData = []byte(`
+vm:
+  vcpus: 4
+  memory: 1024
+`)
+
+	var testValidAllPropsParameterizedData = []byte(`
+vm:
+  vcpus: $vcpus
+  memory: $memory
+`)
 	testTable := []struct {
 		description             string
 		testJSON                []byte
 		nonParamDefineJSONBuf   []byte
 		inputParamSchemaJSONBuf []byte
+		keysToAddToRequiredSec 	[]string
 	}{
-		{"Parameterized Template test", testValidAllPropsParameterizedData, testJSONNonParamSchema, testInputParamJSONSchema},
-		{"Non Parameterized Template test", testValidAllPropsNonParameterizedData, testJSONNonParamSchema, testInputParamJSONSchema},
+		{"Parameterized Template test", testValidAllPropsParameterizedData, testJSONNonParamSchema, testInputParamJSONSchema, []string{"vm_id", "name"}},
+		{"Non Parameterized Template test", testValidAllPropsNonParameterizedData, testJSONNonParamSchema, testInputParamJSONSchema, []string{"vm_id", "name"}},
 	}
 
 	for i, tdr := range testTable {
 		t.Run(fmt.Sprintf("%d:%s", i, tdr.description), func(t *testing.T) {
-			r, e := jsondatavalidator.GenerateJSONSchemaFromParameterizedTemplate(tdr.testJSON, tdr.nonParamDefineJSONBuf, tdr.inputParamSchemaJSONBuf)
+			r, e := jsondatavalidator.GenerateJSONSchemaFromParameterizedTemplate(tdr.testJSON, tdr.nonParamDefineJSONBuf, tdr.inputParamSchemaJSONBuf, tdr.keysToAddToRequiredSec)
 			t.Log(string(r))
 			if r == nil && e != nil {
 				t.Fatal("ERROR: JSONSchema failed to be generated.")
