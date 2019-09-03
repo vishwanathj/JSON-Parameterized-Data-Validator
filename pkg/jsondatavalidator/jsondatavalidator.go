@@ -31,10 +31,6 @@ const (
 	KeyInputParam = "inputParam"
 	// KeyRequired holds name of a key in a map
 	KeyRequired = "required"
-	// KeyVnfdID holds name of a key in a map
-	KeyVnfdID = "vnfd_id"
-	// KeyName holds name of a key in a map
-	KeyName = "name"
 	// KeyProperties holds name of a key in a map
 	KeyProperties = "properties"
 )
