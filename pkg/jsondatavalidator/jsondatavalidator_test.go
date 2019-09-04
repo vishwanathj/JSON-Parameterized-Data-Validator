@@ -179,31 +179,42 @@ func TestNewSearchResults(t *testing.T) {
 }
 
 func TestGenerateJSONSchemaFromParameterizedTemplate(t *testing.T) {
+	var regExpStr1 = `.*\$.*`
+	var regExpStr2 = `.*\{.*`
+
 	var testValidAllPropsNonParameterizedData = []byte(`
 vm:
   vcpus: 4
   memory: 1024
 `)
 
-	var testValidAllPropsParameterizedData = []byte(`
+	var testValidAllPropsParameterizedData1 = []byte(`
 vm:
   vcpus: $vcpus
   memory: $memory
 `)
+	var testValidAllPropsParameterizedData2 = []byte(`
+vm:
+  vcpus: {vcpus
+  memory: {memory
+`)
+
 	testTable := []struct {
 		description             string
 		testJSON                []byte
 		nonParamDefineJSONBuf   []byte
 		inputParamSchemaJSONBuf []byte
 		keysToAddToRequiredSec 	[]string
+		regExpStr 				string
 	}{
-		{"Parameterized Template test", testValidAllPropsParameterizedData, testJSONNonParamSchema, testInputParamJSONSchema, []string{"vm_id", "name"}},
-		{"Non Parameterized Template test", testValidAllPropsNonParameterizedData, testJSONNonParamSchema, testInputParamJSONSchema, []string{"vm_id", "name"}},
+		{"Parameterized (`$`) Template test", testValidAllPropsParameterizedData1, testJSONNonParamSchema, testInputParamJSONSchema, []string{"vm_id", "name"}, regExpStr1},
+		{"Non Parameterized Template test", testValidAllPropsNonParameterizedData, testJSONNonParamSchema, testInputParamJSONSchema, []string{"vm_id", "name"}, regExpStr1},
+		{"Parameterized (`{`) Template test", testValidAllPropsParameterizedData2, testJSONNonParamSchema, testInputParamJSONSchema, []string{"vm_id", "name"}, regExpStr2},
 	}
 
 	for i, tdr := range testTable {
 		t.Run(fmt.Sprintf("%d:%s", i, tdr.description), func(t *testing.T) {
-			r, e := jsondatavalidator.GenerateJSONSchemaFromParameterizedTemplate(tdr.testJSON, tdr.nonParamDefineJSONBuf, tdr.inputParamSchemaJSONBuf, tdr.keysToAddToRequiredSec)
+			r, e := jsondatavalidator.GenerateJSONSchemaFromParameterizedTemplate(tdr.testJSON, tdr.nonParamDefineJSONBuf, tdr.inputParamSchemaJSONBuf, tdr.keysToAddToRequiredSec, tdr.regExpStr)
 			t.Log(string(r))
 			if r == nil && e != nil {
 				t.Fatal("ERROR: JSONSchema failed to be generated.")

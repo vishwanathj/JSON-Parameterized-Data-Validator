@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"reflect"
 
 	"github.com/peterbourgon/mergemap"
@@ -72,25 +71,6 @@ func (resmap *SearchResults) UpdateSearchResults(val interface{}) {
 	if !contains(resmap.Results, val) {
 		resmap.Results = append(resmap.Results, val)
 	}
-}
-
-// GetSchemaDefinitionFileAsJSONBuf reads a Schema file and returns JSON buf
-func GetSchemaDefinitionFileAsJSONBuf(schemaFileName string) ([]byte, error) {
-	log.Debug()
-	//bpath := GetAbsDIRPathGivenRelativePath(SchemaDir)
-	//yamlText, err := ioutil.ReadFile(bpath + "/" + schemaFileName)
-	yamlText, err := ioutil.ReadFile(schemaFileName)
-
-	if err != nil {
-		log.Error(err)
-		return nil, err
-	}
-
-	var m map[string]interface{}
-	err = yaml.Unmarshal(yamlText, &m)
-	log.Debug(string(yamlText), err)
-
-	return yamlText, err
 }
 
 // ValidateJSONBufAgainstSchema takes as arguments:
@@ -233,12 +213,12 @@ func (resmap *SearchResults) ParseArray(anArray []interface{}) {
 // GenerateJSONSchemaFromParameterizedTemplate generated a dynamic schema
 // by parsing the template for parameterized variables and looking up
 // allowable values for those parameterized variables.
-func GenerateJSONSchemaFromParameterizedTemplate(parameterizedJSON []byte, nonParamDefineJSONBuf []byte, inputParamSchemaJSONBuf []byte, keysToAddToRequiredSection []string) ([]byte, error) {
+func GenerateJSONSchemaFromParameterizedTemplate(parameterizedJSON []byte, nonParamDefineJSONBuf []byte, inputParamSchemaJSONBuf []byte, keysToAddToRequiredSection []string, regExpStr string) ([]byte, error) {
 	// The regexp looks for the $ anywhere in the line and returns the entire line
 	log.Debug()
-	validRegexList := `.*\$.*`
+	//validRegexList := `.*\$.*`
 
-	slist := GetRegexMatchingListFromJSONBuff(parameterizedJSON, validRegexList)
+	slist := GetRegexMatchingListFromJSONBuff(parameterizedJSON, regExpStr)
 	log.WithFields(log.Fields{"RegexMatchingList": slist}).Debug()
 
 	mapParameterizedParamAndDefinition := CreateRevMapStructFromGivenStringListWithSpecifiedSeparator(slist, ":", "-")
