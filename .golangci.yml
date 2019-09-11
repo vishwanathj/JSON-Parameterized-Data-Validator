@@ -1,0 +1,33 @@
+run:
+  skip-dirs:
+    - vendor
+
+linters:
+  disable-all: false
+  enable:
+    - gofmt
+    - deadcode
+    - dupl
+    - errcheck
+    - funlen
+    - gocritic
+    - gocyclo
+    - goimports
+    - gosec
+    - gosimple
+    - govet
+    - depguard
+    - goconst
+    - ineffassign
+    - interfacer
+    - lll
+    - maligned
+    - nakedret
+    - prealloc
+  #  - scopelint Due to scopelint issue https://github.com/kyoh86/scopelint/issues/4
+    - structcheck
+    - staticcheck
+    - unconvert
+    - unparam
+    - unused
+    - varcheck

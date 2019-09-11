@@ -41,7 +41,9 @@ container:
 container_test:
 		docker build -t vishwanathj/$(BINARY_NAME)_int -f $(BUILD_DIR)/Dockerfile_test .
 lint:
-		golint ./... &> $(TEST_RESULTS_DIR)/lint.out
+		#golint ./... &> $(TEST_RESULTS_DIR)/lint.out
+		golangci-lint --version; \
+		golangci-lint run ./... --verbose
 race:
 		$(GOTEST) -race ${PKG_LIST}
 msan:

@@ -262,7 +262,7 @@ func createSchemaForInputParamsWithRequiredSection(reqCnt int, m map[string]inte
 		keys[i] = k[1:]
 		i++
 	}
-	
+
 	keys = append(keys, keysToAddToRequiredSection...)
 	reqmap[KeyInputParam][KeyRequired] = keys
 
