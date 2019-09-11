@@ -213,7 +213,9 @@ func (resmap *SearchResults) ParseArray(anArray []interface{}) {
 // GenerateJSONSchemaFromParameterizedTemplate generated a dynamic schema
 // by parsing the template for parameterized variables and looking up
 // allowable values for those parameterized variables.
-func GenerateJSONSchemaFromParameterizedTemplate(parameterizedJSON []byte, nonParamDefineJSONBuf []byte, inputParamSchemaJSONBuf []byte, keysToAddToRequiredSection []string, regExpStr string) ([]byte, error) {
+func GenerateJSONSchemaFromParameterizedTemplate(parameterizedJSON []byte,
+	nonParamDefineJSONBuf []byte, inputParamSchemaJSONBuf []byte,
+	keysToAddToRequiredSection []string, regExpStr string) ([]byte, error) {
 	// The regexp looks for the $ anywhere in the line and returns the entire line
 	log.Debug()
 	//validRegexList := `.*\$.*`
@@ -224,7 +226,9 @@ func GenerateJSONSchemaFromParameterizedTemplate(parameterizedJSON []byte, nonPa
 	mapParameterizedParamAndDefinition := CreateRevMapStructFromGivenStringListWithSpecifiedSeparator(slist, ":", "-")
 	log.WithFields(log.Fields{"mapParameterizedParamAndDefinition": mapParameterizedParamAndDefinition}).Debug()
 
-	propjson := createSchemaForInputParamsFromParameterizedProperties(mapParameterizedParamAndDefinition, nonParamDefineJSONBuf)
+	propjson := createSchemaForInputParamsFromParameterizedProperties(
+		mapParameterizedParamAndDefinition,
+		nonParamDefineJSONBuf)
 
 	var src map[string]interface{}
 	_ = json.Unmarshal(propjson, &src)
@@ -234,7 +238,8 @@ func GenerateJSONSchemaFromParameterizedTemplate(parameterizedJSON []byte, nonPa
 
 	inter := mergemap.Merge(inputParamSchemaMap, src)
 
-	reqjson := createSchemaForInputParamsWithRequiredSection(len(src), mapParameterizedParamAndDefinition, keysToAddToRequiredSection)
+	reqjson := createSchemaForInputParamsWithRequiredSection(len(src),
+		mapParameterizedParamAndDefinition, keysToAddToRequiredSection)
 	var req map[string]interface{}
 	_ = json.Unmarshal(reqjson, &req)
 
@@ -250,7 +255,8 @@ func GenerateJSONSchemaFromParameterizedTemplate(parameterizedJSON []byte, nonPa
 // ii) a map that contains as its
 //		key: the parameterized param from the parameterized template
 //		value: the definition key that can be looked up in the json schema for allowable format and values
-func createSchemaForInputParamsWithRequiredSection(reqCnt int, m map[string]interface{}, keysToAddToRequiredSection []string) []byte {
+func createSchemaForInputParamsWithRequiredSection(reqCnt int,
+	m map[string]interface{}, keysToAddToRequiredSection []string) []byte {
 	log.Debug()
 	reqmap := make(map[string]map[string]interface{})
 	reqmap[KeyInputParam] = make(map[string]interface{})
