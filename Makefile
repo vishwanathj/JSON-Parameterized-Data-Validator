@@ -14,37 +14,23 @@ DEPLOYMENT_DIR=deployments/docker-compose
 PKG_LIST=$(shell go list ./... | grep -v /vendor/)
 TEST_RESULTS_DIR=test_results
 
-all: deps build unit
-build:
-		$(GOBUILD) -o $(GOPATH)/bin/$(BINARY_NAME) $(BINARY_SRC_DIR)/$(BINARY_NAME)/main.go
+all: deps unit
 unit:
-		#The idiomatic way to disable test caching explicitly is to use -count=1.
 		mkdir -p $(TEST_RESULTS_DIR)
+		#The idiomatic way to disable test caching explicitly is to use -count=1.
 		$(GOTEST) -v ./... -count=1 -tags=unit -coverprofile $(TEST_RESULTS_DIR)/coverage_unit.out &> $(TEST_RESULTS_DIR)/dbg_unit.out
 		go tool cover -html=$(TEST_RESULTS_DIR)/coverage_unit.out -o $(TEST_RESULTS_DIR)/coverage_unit.html
 		go tool cover -func=$(TEST_RESULTS_DIR)/coverage_unit.out -o $(TEST_RESULTS_DIR)/func_coverage.out
 display_unit_html:
 		go tool cover -html=$(TEST_RESULTS_DIR)/coverage_unit.out
 clean:
+		docker system prune -f
 		rm -rf $(TEST_RESULTS_DIR)
-		#$(GOCLEAN)
-		#rm -f $(GOPATH)/bin/$(BINARY_NAME)
-		#rm -f $(GOPATH)/bin/$(BINARY_UNIX)
-run:
-		$(GOBUILD) -o $(GOPATH)/bin/$(BINARY_NAME) $(BINARY_SRC_DIR)/$(BINARY_NAME)/main.go
-		$(BINARY_NAME)
 deps:
-		$(GOGET) gopkg.in/tomb.v2 github.com/stretchr/testify golang.org/x/lint/golint github.com/t-yuki/gocover-cobertura
-		$(GOGET) -d -v ./...
-container:
-		docker build -t vishwanathj/$(BINARY_NAME) -f $(BUILD_DIR)/Dockerfile .
+		dep ensure
+		dep status
 container_test:
-		docker build -t vishwanathj/$(BINARY_NAME)_int -f $(BUILD_DIR)/Dockerfile_test .
+		docker build -t vishwanathj/$(BINARY_NAME)_int -f $(BUILD_DIR)/Dockerfile_unit_test .
 lint:
-		#golint ./... &> $(TEST_RESULTS_DIR)/lint.out
 		golangci-lint --version; \
 		golangci-lint run ./... --verbose
-race:
-		$(GOTEST) -race ${PKG_LIST}
-msan:
-		$(GOTEST) -msan -short ${PKG_LIST}

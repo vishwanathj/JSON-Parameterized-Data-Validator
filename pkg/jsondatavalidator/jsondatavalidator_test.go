@@ -226,7 +226,9 @@ vm:
 func TestValidateJSONBufAgainstSchema(t *testing.T) {
 	testValidSchema := `{"type": "object", "properties": {"vm": {"additionalProperties": false, "type": "object", "required": ["vcpus"], "optional": ["memory"], "properties": {"vcpus": {"oneOf": [{"pattern": "^\\$[A-Za-z][-A-Za-z0-9_]*$", "type": "string"}, {"minimum": 2, "type": "integer", "maximum": 16, "multipleOf": 2.0}]},"memory": {"oneOf": [{"pattern": "^\\$[A-Za-z][-A-Za-z0-9_]*$", "type": "string"}, {"minimum": 512, "type": "integer", "maximum": 16384, "multipleOf": 512}]}}}}}`
 	testValidJSONData := []byte(`{"vm": {"vcpus": "$vcpus","memory": "$memory"}}`)
-	testInValidJSONData := []byte(`{"vm": {"cpus": "$vcpus","memory": "$memory"}}`)
+	//testInValidJSONData := []byte(`{"vm": {"cpus": "$vcpus","memory": "$memory"}}`)
+	testInValidJSONData := []byte(`{"vm": {"memory": "$memory"}}`)
+	testInvalidAdditionalProperty := []byte(`{"vm": {"vcpus":"$vcpus", "proc":"$proc"}}`)
 
 	testTable := []struct {
 		description          string
@@ -238,7 +240,8 @@ func TestValidateJSONBufAgainstSchema(t *testing.T) {
 		{"Invalid URL", []byte(`{"key": "val"}`), strings.NewReader("dummy"), "d", fmt.Errorf("AddResourceError")},
 		{"Malformed JSON", []byte(`{"key":`), strings.NewReader("dummy"), "d", fmt.Errorf("UnMarshallError")},
 		{"Valid JSON", testValidJSONData, strings.NewReader(string(testValidSchema)), "sch.json", nil},
-		{"Invalid against Schema", testInValidJSONData, strings.NewReader(string(testValidSchema)), "sch.json", fmt.Errorf("I[#/vm] S[#/properties/vm/required] missing properties: \"vcpus\"")},
+		{"Invalid: additional property", testInvalidAdditionalProperty, strings.NewReader(string(testValidSchema)), "sch.json", fmt.Errorf("I[#/vm] S[#/properties/vm/additionalProperties] additionalProperties \"proc\" not allowed")},
+		{"Invalid: missing required property", testInValidJSONData, strings.NewReader(string(testValidSchema)), "sch.json", fmt.Errorf("I[#/vm] S[#/properties/vm/required] missing properties: \"vcpus\"")},
 	}
 	for i, tdr := range testTable {
 		t.Run(fmt.Sprintf("%d:%s", i, tdr.description), func(t *testing.T) {

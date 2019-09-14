@@ -1,0 +1,17 @@
+FROM golang:1.11.2
+
+RUN go get -u github.com/golang/dep/cmd/dep
+
+RUN go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
+
+WORKDIR /go/src/github.com/vishwanathj/JSON-Parameterized-Data-Validator
+
+ADD ./ /go/src/github.com/vishwanathj/JSON-Parameterized-Data-Validator
+
+RUN dep ensure
+
+RUN dep status
+
+RUN go test -v ./... -count=1 -tags=unit
+
+RUN golangci-lint run ./... --verbose

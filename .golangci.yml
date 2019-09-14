@@ -10,7 +10,7 @@ linters:
     - dupl
     - errcheck
     - funlen
-    - gocritic
+    #- gocritic
     - gocyclo
     - goimports
     - gosec
@@ -24,7 +24,6 @@ linters:
     - maligned
     - nakedret
     - prealloc
-  #  - scopelint Due to scopelint issue https://github.com/kyoh86/scopelint/issues/4
     - structcheck
     - staticcheck
     - unconvert
