@@ -1,17 +1,9 @@
 # Go parameters
 # Reference --> https://sohlich.github.io/post/go_makefile/
 GOCMD=go
-GOBUILD=$(GOCMD) build
-GOCLEAN=$(GOCMD) clean
 GOTEST=$(GOCMD) test
-GOGET=$(GOCMD) get
 BINARY_NAME=json-data-validator
-BINARY_UNIX=$(BINARY_NAME)
-BINARY_SRC_DIR=cmd
 BUILD_DIR=build/package
-DEPLOYMENT_DIR=deployments/docker-compose
-#https://medium.com/pantomath/go-tools-gitlab-how-to-do-continuous-integration-like-a-boss-941a3a9ad0b6
-PKG_LIST=$(shell go list ./... | grep -v /vendor/)
 TEST_RESULTS_DIR=test_results
 
 all: deps unit
