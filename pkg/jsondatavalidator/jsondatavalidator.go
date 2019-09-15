@@ -216,19 +216,24 @@ func (resmap *SearchResults) ParseArray(anArray []interface{}) {
 func GenerateJSONSchemaFromParameterizedTemplate(parameterizedJSON []byte,
 	nonParamDefineJSONBuf []byte, inputParamSchemaJSONBuf []byte,
 	keysToAddToRequiredSection []string, regExpStr string) ([]byte, error) {
-	// The regexp looks for the $ anywhere in the line and returns the entire line
-	log.Debug()
-	//validRegexList := `.*\$.*`
 
-	slist := GetRegexMatchingListFromJSONBuff(parameterizedJSON, regExpStr)
+	log.Debug()
+
+	// The regexp looks for the ```regExpStr``` anywhere in the line and returns the entire line
+	slist := GetRegexMatchingListFromJSONBuff(parameterizedJSON, `.*`+regExpStr+`.*`)
 	log.WithFields(log.Fields{"RegexMatchingList": slist}).Debug()
 
 	mapParameterizedParamAndDefinition := CreateRevMapStructFromGivenStringListWithSpecifiedSeparator(slist, ":", "-")
 	log.WithFields(log.Fields{"mapParameterizedParamAndDefinition": mapParameterizedParamAndDefinition}).Debug()
 
+	rxp, err := regexp.Compile(regExpStr)
+	if err != nil {
+		return nil, err
+	}
 	propjson := createSchemaForInputParamsFromParameterizedProperties(
 		mapParameterizedParamAndDefinition,
-		nonParamDefineJSONBuf)
+		nonParamDefineJSONBuf,
+		rxp)
 
 	var src map[string]interface{}
 	_ = json.Unmarshal(propjson, &src)
@@ -239,7 +244,7 @@ func GenerateJSONSchemaFromParameterizedTemplate(parameterizedJSON []byte,
 	inter := mergemap.Merge(inputParamSchemaMap, src)
 
 	reqjson := createSchemaForInputParamsWithRequiredSection(len(src),
-		mapParameterizedParamAndDefinition, keysToAddToRequiredSection)
+		mapParameterizedParamAndDefinition, keysToAddToRequiredSection, rxp)
 	var req map[string]interface{}
 	_ = json.Unmarshal(reqjson, &req)
 
@@ -255,8 +260,11 @@ func GenerateJSONSchemaFromParameterizedTemplate(parameterizedJSON []byte,
 // ii) a map that contains as its
 //		key: the parameterized param from the parameterized template
 //		value: the definition key that can be looked up in the json schema for allowable format and values
+// iii) keysToAddToRequiredSection: pre-defined keys to be added to 'required' section of json schema
+// iv) rxp: compiled regexp that is used for pattern match and deriving value for key
 func createSchemaForInputParamsWithRequiredSection(reqCnt int,
-	m map[string]interface{}, keysToAddToRequiredSection []string) []byte {
+	m map[string]interface{}, keysToAddToRequiredSection []string,
+	rxp *regexp.Regexp) []byte {
 	log.Debug()
 	reqmap := make(map[string]map[string]interface{})
 	reqmap[KeyInputParam] = make(map[string]interface{})
@@ -265,14 +273,19 @@ func createSchemaForInputParamsWithRequiredSection(reqCnt int,
 	keys := make([]string, len(m))
 	i := 0
 	for k := range m {
-		keys[i] = k[1:]
+		res := rxp.FindStringSubmatch(k)
+		// FindStringSubmatch will return for e.g; "[>>memory memory]",
+		// we want to pick the last element in the array
+		l := len(res)
+		key := res[l-1]
+		log.WithFields(log.Fields{"res": res, "len": l, "key": key}).Debug()
+		keys[i] = key
 		i++
 	}
 
 	keys = append(keys, keysToAddToRequiredSection...)
 	reqmap[KeyInputParam][KeyRequired] = keys
 
-	//reqjson, e := yaml.Marshal(reqmap)
 	reqjson, e := json.Marshal(reqmap)
 
 	if e != nil {
@@ -285,9 +298,11 @@ func createSchemaForInputParamsWithRequiredSection(reqCnt int,
 // i) a map that contains as its
 // 		key: the parameterized param from the parameterized template
 //		value: the definition key that can be looked up in the json schema for allowable format and values
-// ii) json schema that contains property definitions and formats
+// ii) schemaJSON: json schema that contains property definitions and formats
+// iii) rxp: compiled regexp that is used for pattern match and deriving value for key
 // The function returns dynamically created Schema for the "input_param" as JSON buffer
-func createSchemaForInputParamsFromParameterizedProperties(m map[string]interface{}, schemaJSON []byte) []byte {
+func createSchemaForInputParamsFromParameterizedProperties(m map[string]interface{}, schemaJSON []byte,
+	rxp *regexp.Regexp) []byte {
 	log.Debug()
 	var schema map[string]interface{}
 	//_ = yaml.Unmarshal(schemaJSON, &schema)
@@ -303,13 +318,17 @@ func createSchemaForInputParamsFromParameterizedProperties(m map[string]interfac
 		for _, elem := range pvm.Results {
 			switch elem.(type) {
 			case map[string]interface{}:
-				//k[1:] removes the first character '$'
-				propmap[KeyInputParam][KeyProperties][k[1:]] = elem
+				res := rxp.FindStringSubmatch(k)
+				// FindStringSubmatch will return for e.g; "[>>memory memory]",
+				// we want to pick the last element in the array
+				l := len(res)
+				key := res[l-1]
+				log.WithFields(log.Fields{"res": res, "len": l, "key": key}).Debug()
+				propmap[KeyInputParam][KeyProperties][key] = elem
 			}
 		}
 	}
 
-	//propjson, _ := yaml.Marshal(propmap)
 	propjson, _ := json.Marshal(propmap)
 
 	return propjson

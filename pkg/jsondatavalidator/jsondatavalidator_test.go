@@ -179,8 +179,10 @@ func TestNewSearchResults(t *testing.T) {
 }
 
 func TestGenerateJSONSchemaFromParameterizedTemplate(t *testing.T) {
-	var regExpStr1 = `.*\$.*`
-	var regExpStr2 = `.*\{.*`
+	var regExpStr1 = `\${1}(.*)`
+	var regExpStr2 = `\{{1}(.*)`
+	var regExpStr3 = `>{2}(.*)`
+	var regExpStr4 = `>{2}(.*)<{2}`
 
 	var testValidAllPropsNonParameterizedData = []byte(`
 vm:
@@ -198,6 +200,16 @@ vm:
   vcpus: {vcpus
   memory: {memory
 `)
+	var testValidAllPropsParameterizedData3 = []byte(`
+vm:
+  vcpus: >>vcpus
+  memory: >>memory
+`)
+	var testValidAllPropsParameterizedData4 = []byte(`
+vm:
+  vcpus: >>vcpus<<
+  memory: >>memory<<
+`)
 
 	testTable := []struct {
 		description             string
@@ -210,6 +222,8 @@ vm:
 		{"Parameterized (`$`) Template test", testValidAllPropsParameterizedData1, testJSONNonParamSchema, testInputParamJSONSchema, []string{"vm_id", "name"}, regExpStr1},
 		{"Non Parameterized Template test", testValidAllPropsNonParameterizedData, testJSONNonParamSchema, testInputParamJSONSchema, []string{"vm_id", "name"}, regExpStr1},
 		{"Parameterized (`{`) Template test", testValidAllPropsParameterizedData2, testJSONNonParamSchema, testInputParamJSONSchema, []string{"vm_id", "name"}, regExpStr2},
+		{"Parameterized (`>>`) Template test", testValidAllPropsParameterizedData3, testJSONNonParamSchema, testInputParamJSONSchema, []string{"vm_id", "name"}, regExpStr3},
+		{"Parameterized (`>><<`) Template test", testValidAllPropsParameterizedData4, testJSONNonParamSchema, testInputParamJSONSchema, []string{"vm_id", "name"}, regExpStr4},
 	}
 
 	for i, tdr := range testTable {
@@ -226,7 +240,6 @@ vm:
 func TestValidateJSONBufAgainstSchema(t *testing.T) {
 	testValidSchema := `{"type": "object", "properties": {"vm": {"additionalProperties": false, "type": "object", "required": ["vcpus"], "optional": ["memory"], "properties": {"vcpus": {"oneOf": [{"pattern": "^\\$[A-Za-z][-A-Za-z0-9_]*$", "type": "string"}, {"minimum": 2, "type": "integer", "maximum": 16, "multipleOf": 2.0}]},"memory": {"oneOf": [{"pattern": "^\\$[A-Za-z][-A-Za-z0-9_]*$", "type": "string"}, {"minimum": 512, "type": "integer", "maximum": 16384, "multipleOf": 512}]}}}}}`
 	testValidJSONData := []byte(`{"vm": {"vcpus": "$vcpus","memory": "$memory"}}`)
-	//testInValidJSONData := []byte(`{"vm": {"cpus": "$vcpus","memory": "$memory"}}`)
 	testInValidJSONData := []byte(`{"vm": {"memory": "$memory"}}`)
 	testInvalidAdditionalProperty := []byte(`{"vm": {"vcpus":"$vcpus", "proc":"$proc"}}`)
 
