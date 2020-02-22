@@ -12,9 +12,9 @@ jobs:
       #- run: go get -v -t -d ./...
       #- run: go test -v ./... -count=1 -tags=unit
       - run: make docker-gosec
-  #build1:
-    #docker:
-      #- image: circleci/golang:1.11.2
+  build1:
+    docker:
+      - image: circleci/golang:1.11.2
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -25,12 +25,12 @@ jobs:
     #### expecting it in the form of
     ####   /go/src/github.com/circleci/go-tool
     ####   /go/src/bitbucket.org/circleci/go-tool
-    #working_directory: /go/src/github.com/vishwanathj/JSON-Parameterized-Data-Validator
-    #steps:
-      #- checkout
+    working_directory: /go/src/github.com/vishwanathj/JSON-Parameterized-Data-Validator
+    steps:
+      - checkout
       #- setup_remote_docker
 
       # specify any bash command here prefixed with `run: `
-      #- run: go get -v -t -d ./...
-      #- run: go test -v ./... -count=1 -tags=unit
+      - run: go get -v -t -d ./...
+      - run: go test -v ./... -count=1 -tags=unit
       #- run: make gosec
