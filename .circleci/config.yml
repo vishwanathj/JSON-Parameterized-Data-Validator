@@ -6,7 +6,7 @@ jobs:
   build:
     machine:
       enabled: true
-    working_directory: /go/src/github.com/vishwanathj/JSON-Parameterized-Data-Validator
+    working_directory: ~/go/src/github.com/vishwanathj/JSON-Parameterized-Data-Validator
     steps:
       - checkout
       - run: go get -v -t -d ./...
