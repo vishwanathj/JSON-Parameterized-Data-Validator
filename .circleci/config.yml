@@ -26,4 +26,5 @@ jobs:
       - run: go get -v -t -d ./...
       - run: go test -v ./... -count=1 -tags=unit
       - run: make gosec
+      - run: make docker-gosec
       #- run: make unit
