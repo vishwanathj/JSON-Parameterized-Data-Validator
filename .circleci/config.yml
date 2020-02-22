@@ -5,6 +5,7 @@ version: 2
 jobs:
   build:
     machine:
+      - enabled: true
       - image: ubuntu-1604:201903-01
     working_directory: /go/src/github.com/vishwanathj/JSON-Parameterized-Data-Validator
     steps:
