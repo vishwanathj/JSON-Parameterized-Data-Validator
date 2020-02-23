@@ -34,3 +34,9 @@ jobs:
       - run: go get -v -t -d ./...
       - run: go test -v ./... -count=1 -tags=unit
       #- run: make gosec
+workflows:
+  version: 2
+  workflow:
+    jobs:
+      - build
+      - build1
