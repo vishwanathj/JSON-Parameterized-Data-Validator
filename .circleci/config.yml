@@ -35,6 +35,8 @@ jobs:
       - run: make unit
       - store_artifacts:
           path: /home/circleci/test_results
+      - store_test_results:
+          path: /home/circleci/test_results
 workflows:
   version: 2
   workflow:
