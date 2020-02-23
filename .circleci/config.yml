@@ -34,7 +34,7 @@ jobs:
       - run: go test -v ./... -count=1 -tags=unit
       - run: make unit
       - store_artifacts:
-          path: $(HOME)/test_results
+          path: /home/circleci/test_results
 workflows:
   version: 2
   workflow:
