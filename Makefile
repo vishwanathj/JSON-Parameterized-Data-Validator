@@ -33,9 +33,6 @@ lint_dkr:
 		docker run --rm -v ${PWD}:/go/src/github.com/vishwanathj/JSON-Parameterized-Data-Validator -w /go/src/github.com/vishwanathj/JSON-Parameterized-Data-Validator $(LINT_DKR_IMG) \
 		sh -c "go get -u github.com/golang/dep/cmd/dep  && dep ensure -v && golangci-lint run -v"
 docker-gosec:
-		#docker run -it -v <YOUR PROJECT PATH>/<PROJECT>:/<PROJECT> securego/gosec /<PROJECT>/...
-		echo ${PWD}
-		echo $(PWD)
 		docker run -it -v ${PWD}:/JSONPDV securego/gosec /JSONPDV/...
 gosec:
 		curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s -- -b ~/tmp v2.2.0
