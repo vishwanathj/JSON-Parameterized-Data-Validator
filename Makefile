@@ -4,6 +4,7 @@ GOCMD=go
 GOTEST=$(GOCMD) test
 BINARY_NAME=json-data-validator
 BUILD_DIR=build/package
+# change to value of TEST_RESULTS_DIR would need a corresponding change in .circleci/config.yml file
 TEST_RESULTS_DIR=$(HOME)/test_results
 LINT_DKR_IMG=golangci/golangci-lint:v1.18.0
 #LINT_DKR_IMG=golangci/golangci-lint:v1.23-alpine
@@ -15,7 +16,6 @@ unit:
 		#The idiomatic way to disable test caching explicitly is to use -count=1.
 		#$(GOTEST) -v ./... -count=1 -tags=unit -coverprofile $(TEST_RESULTS_DIR)/coverage_unit.out &> $(TEST_RESULTS_DIR)/dbg_unit.out
 		$(GOTEST) -v ./... -count=1 -tags=unit -coverprofile $(TEST_RESULTS_DIR)/coverage_unit.out
-		ls -l $(TEST_RESULTS_DIR)
 		go tool cover -html=$(TEST_RESULTS_DIR)/coverage_unit.out -o $(TEST_RESULTS_DIR)/coverage_unit.html
 		go tool cover -func=$(TEST_RESULTS_DIR)/coverage_unit.out -o $(TEST_RESULTS_DIR)/func_coverage.out
 display_unit_html:
