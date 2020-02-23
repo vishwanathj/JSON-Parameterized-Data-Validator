@@ -4,16 +4,18 @@ GOCMD=go
 GOTEST=$(GOCMD) test
 BINARY_NAME=json-data-validator
 BUILD_DIR=build/package
-TEST_RESULTS_DIR=test_results
+TEST_RESULTS_DIR=$(HOME)/test_results
 LINT_DKR_IMG=golangci/golangci-lint:v1.18.0
+#LINT_DKR_IMG=golangci/golangci-lint:v1.23-alpine
 GOSEC_VER=v2.2.0
-#LINT_DKR_IMG=golangci/golangci-lint:v1.18.0
 
 all: deps unit
 unit:
 		mkdir -p $(TEST_RESULTS_DIR)
 		#The idiomatic way to disable test caching explicitly is to use -count=1.
-		$(GOTEST) -v ./... -count=1 -tags=unit -coverprofile $(TEST_RESULTS_DIR)/coverage_unit.out &> $(TEST_RESULTS_DIR)/dbg_unit.out
+		#$(GOTEST) -v ./... -count=1 -tags=unit -coverprofile $(TEST_RESULTS_DIR)/coverage_unit.out &> $(TEST_RESULTS_DIR)/dbg_unit.out
+		$(GOTEST) -v ./... -count=1 -tags=unit -coverprofile $(TEST_RESULTS_DIR)/coverage_unit.out
+		ls -l $(TEST_RESULTS_DIR)
 		go tool cover -html=$(TEST_RESULTS_DIR)/coverage_unit.out -o $(TEST_RESULTS_DIR)/coverage_unit.html
 		go tool cover -func=$(TEST_RESULTS_DIR)/coverage_unit.out -o $(TEST_RESULTS_DIR)/func_coverage.out
 display_unit_html:
@@ -29,12 +31,11 @@ container_test:
 lint:
 		golangci-lint --version; \
 		golangci-lint run ./... --verbose
-lint_dkr:
+docker-lint:
 		docker run --rm -v ${PWD}:/go/src/github.com/vishwanathj/JSON-Parameterized-Data-Validator -w /go/src/github.com/vishwanathj/JSON-Parameterized-Data-Validator $(LINT_DKR_IMG) \
 		sh -c "go get -u github.com/golang/dep/cmd/dep  && dep ensure -v && golangci-lint run -v"
 docker-gosec:
-		#docker run -it -v <YOUR PROJECT PATH>/<PROJECT>:/<PROJECT> securego/gosec /<PROJECT>/...
-		docker run -it -v ${PWD}:/JSONPDV securego/gosec /JSONPDV/...
+		docker run -it -v ${PWD}:/JSONPDV securego/gosec:$(GOSEC_VER) /JSONPDV/...
 gosec:
-		curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s -- -b /tmp v2.2.0
-		/tmp/gosec ./...
+		curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s -- -b ~/tmp v2.2.0
+		~/tmp/gosec ./...
