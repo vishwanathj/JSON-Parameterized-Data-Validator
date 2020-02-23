@@ -38,5 +38,7 @@ workflows:
   version: 2
   workflow:
     jobs:
-      - build
       - build1
+      - build:
+          requires:
+            - build1
