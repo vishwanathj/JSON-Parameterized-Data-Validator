@@ -34,7 +34,7 @@ jobs:
       - run: go test -v ./... -count=1 -tags=unit
       - run: make unit
       - store_artifacts:
-          path: /go/src/github.com/vishwanathj/JSON-Parameterized-Data-Validator/test_results
+          path: /tmp/test_results
 workflows:
   version: 2
   workflow:
