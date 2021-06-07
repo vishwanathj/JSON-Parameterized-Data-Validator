@@ -11,7 +11,23 @@ import (
 	"math/big"
 	"regexp"
 	"strings"
+
+	"github.com/santhosh-tekuri/jsonschema/decoders"
+	"github.com/santhosh-tekuri/jsonschema/formats"
+	"github.com/santhosh-tekuri/jsonschema/loader"
+	"github.com/santhosh-tekuri/jsonschema/mediatypes"
 )
+
+func init() {
+	formats.Register("encoding", func(s string) bool {
+		_, ok := decoders.Get(s)
+		return ok
+	})
+	formats.Register("mediatype", func(s string) bool {
+		_, ok := mediatypes.Get(s)
+		return ok
+	})
+}
 
 // A Draft represents json-schema draft
 type Draft struct {
@@ -25,7 +41,7 @@ var latest = Draft7
 func (draft *Draft) validateSchema(url, ptr string, v interface{}) error {
 	if meta := draft.meta; meta != nil {
 		if err := meta.validate(v); err != nil {
-			_ = addContext(ptr, "", err)
+			addContext(ptr, "", err)
 			finishSchemaContext(err, meta)
 			finishInstanceContext(err)
 			var instancePtr string
@@ -62,16 +78,9 @@ type Compiler struct {
 	// ExtractAnnotations tells whether schema annotations has to be extracted
 	// in compiled Schema or not.
 	ExtractAnnotations bool
-
-	// LoadURL loads the document at given URL.
-	//
-	// If nil, package global LoadURL is used.
-	LoadURL func(s string) (io.ReadCloser, error)
 }
 
-// NewCompiler returns a json-schema Compiler object.
-// if '$schema' attribute is missing, it is treated as draft7. to change this
-// behavior change Compiler.Draft value
+// NewCompiler returns a draft7 json-schema Compiler object.
 func NewCompiler() *Compiler {
 	return &Compiler{Draft: latest, resources: make(map[string]*resource)}
 }
@@ -103,7 +112,7 @@ func (c *Compiler) MustCompile(url string) *Schema {
 func (c *Compiler) Compile(url string) (*Schema, error) {
 	base, fragment := split(url)
 	if _, ok := c.resources[base]; !ok {
-		r, err := c.loadURL(base)
+		r, err := loader.Load(base)
 		if err != nil {
 			return nil, err
 		}
@@ -137,13 +146,6 @@ func (c *Compiler) Compile(url string) (*Schema, error) {
 	return c.compileRef(r, r.url, fragment)
 }
 
-func (c Compiler) loadURL(s string) (io.ReadCloser, error) {
-	if c.LoadURL != nil {
-		return c.LoadURL(s)
-	}
-	return LoadURL(s)
-}
-
 func (c Compiler) compileRef(r *resource, base, ref string) (*Schema, error) {
 	var err error
 	if rootFragment(ref) {
@@ -153,8 +155,14 @@ func (c Compiler) compileRef(r *resource, base, ref string) (*Schema, error) {
 			}
 			s := &Schema{URL: r.url, Ptr: "#"}
 			r.schemas["#"] = s
-			if _, err := c.compile(r, s, base, r.doc); err != nil {
-				return nil, err
+			if m, ok := r.doc.(map[string]interface{}); ok {
+				if _, err := c.compile(r, s, base, m); err != nil {
+					return nil, err
+				}
+			} else {
+				if _, err := c.compile(r, s, base, r.doc); err != nil {
+					return nil, err
+				}
 			}
 		}
 		return r.schemas["#"], nil
@@ -421,8 +429,8 @@ func (c Compiler) compileMap(r *resource, s *Schema, base string, m map[string]i
 	}
 
 	if format, ok := m["format"]; ok {
-		s.Format = format.(string)
-		s.format, _ = Formats[s.Format]
+		s.FormatName = format.(string)
+		s.Format, _ = formats.Get(s.FormatName)
 	}
 
 	loadFloat := func(pname string) *big.Float {
@@ -490,25 +498,27 @@ func (c Compiler) compileMap(r *resource, s *Schema, base string, m map[string]i
 			if s.Else, err = loadSchema("else"); err != nil {
 				return err
 			}
+
+			if c.ExtractAnnotations {
+				if readOnly, ok := m["readOnly"]; ok {
+					s.ReadOnly = readOnly.(bool)
+				}
+				if writeOnly, ok := m["writeOnly"]; ok {
+					s.WriteOnly = writeOnly.(bool)
+				}
+				if examples, ok := m["examples"]; ok {
+					s.Examples = examples.([]interface{})
+				}
+			}
 		}
+
 		if encoding, ok := m["contentEncoding"]; ok {
 			s.ContentEncoding = encoding.(string)
-			s.decoder, _ = Decoders[s.ContentEncoding]
+			s.Decoder, _ = decoders.Get(s.ContentEncoding)
 		}
 		if mediaType, ok := m["contentMediaType"]; ok {
 			s.ContentMediaType = mediaType.(string)
-			s.mediaType, _ = MediaTypes[s.ContentMediaType]
-		}
-		if c.ExtractAnnotations {
-			if readOnly, ok := m["readOnly"]; ok {
-				s.ReadOnly = readOnly.(bool)
-			}
-			if writeOnly, ok := m["writeOnly"]; ok {
-				s.WriteOnly = writeOnly.(bool)
-			}
-			if examples, ok := m["examples"]; ok {
-				s.Examples = examples.([]interface{})
-			}
+			s.MediaType, _ = mediatypes.Get(s.ContentMediaType)
 		}
 	}
 

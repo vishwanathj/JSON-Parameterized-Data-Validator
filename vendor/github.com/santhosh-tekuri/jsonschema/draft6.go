@@ -155,7 +155,7 @@ func init() {
 					}
 				]
 			},
-			"format": { "type": "string" },
+			"format": { "type": "string", "format": "format" },
 			"allOf": { "$ref": "#/definitions/schemaArray" },
 			"anyOf": { "$ref": "#/definitions/schemaArray" },
 			"oneOf": { "$ref": "#/definitions/schemaArray" },

@@ -37,7 +37,7 @@ This package supports loading json-schema from filePath and fileURL.
 
 To load json-schema from HTTPURL, add following import:
 
-	import _ "github.com/santhosh-tekuri/jsonschema/v2/httploader"
+	import _ "github.com/santhosh-tekuri/jsonschema/httploader"
 
 Loading from urls for other schemes (such as ftp), can be plugged in. see package jsonschema/httploader
 for an example
@@ -64,12 +64,12 @@ To load json-schema from in-memory:
 	}
 
 This package supports json string formats: date-time, date, time, hostname, email, ip-address, ipv4, ipv6, uri, uriref, regex,
-format, json-pointer, relative-json-pointer, uri-template (limited validation). Developers can register their own formats by
-adding them to jsonschema.Formats map.
+format, json-pointer, relative-json-pointer, uri-template (limited validation). Developers can register their own formats using
+package "github.com/santhosh-tekuri/jsonschema/formats".
 
-"base64" contentEncoding is supported. Custom decoders can be registered by adding them to jsonschema.Decoders map.
+"base64" contentEncoding is supported. Custom decoders can be registered using package "github.com/santhosh-tekuri/jsonschema/decoders".
 
-"application/json" contentMediaType is supported. Custom mediatypes can be registered by adding them to jsonschema.MediaTypes map.
+"application/json" contentMediaType is supported. Custom mediatypes can be registered using package "github.com/santhosh-tekuri/jsonschema/mediatypes".
 
 The ValidationError returned by Validate method contains detailed context to understand why and where the error is.
 

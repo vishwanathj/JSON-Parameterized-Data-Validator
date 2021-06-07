@@ -1,0 +1,25 @@
+# github.com/ghodss/yaml v1.0.0
+## explicit
+github.com/ghodss/yaml
+# github.com/konsorten/go-windows-terminal-sequences v1.0.2
+## explicit
+github.com/konsorten/go-windows-terminal-sequences
+# github.com/peterbourgon/mergemap v0.0.0-20130613134717-e21c03b7a721
+## explicit
+github.com/peterbourgon/mergemap
+# github.com/santhosh-tekuri/jsonschema v1.2.4
+## explicit
+github.com/santhosh-tekuri/jsonschema
+github.com/santhosh-tekuri/jsonschema/decoders
+github.com/santhosh-tekuri/jsonschema/formats
+github.com/santhosh-tekuri/jsonschema/loader
+github.com/santhosh-tekuri/jsonschema/mediatypes
+# github.com/sirupsen/logrus v1.4.2
+## explicit
+github.com/sirupsen/logrus
+# golang.org/x/sys v0.0.0-20190910064555-bbd175535a8b
+## explicit
+golang.org/x/sys/unix
+# gopkg.in/yaml.v2 v2.2.2
+## explicit
+gopkg.in/yaml.v2
