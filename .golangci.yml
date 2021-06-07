@@ -1,32 +1,20 @@
+# Refer https://github.com/golangci/golangci-lint/blob/master/.golangci.yml for settings
 run:
   skip-dirs:
     - vendor
 
 linters:
-  disable-all: false
+  disable-all: true
   enable:
     - gofmt
     - deadcode
-    - dupl
     - errcheck
-    - funlen
-    #- gocritic
-    - gocyclo
-    - goimports
-    - gosec
+    - gofmt
     - gosimple
     - govet
-    - depguard
-    - goconst
     - ineffassign
-    - interfacer
-    - lll
-    - maligned
-    - nakedret
-    - prealloc
-    - structcheck
     - staticcheck
-    - unconvert
-    - unparam
+    - structcheck
+    - typecheck
     - unused
     - varcheck
