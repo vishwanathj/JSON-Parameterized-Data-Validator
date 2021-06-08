@@ -6,7 +6,7 @@ BINARY_NAME=json-data-validator
 BUILD_DIR=build/package
 # change to value of TEST_RESULTS_DIR would need a corresponding change in .circleci/config.yml file
 TEST_RESULTS_DIR=$(HOME)/test_results
-LINT_DKR_IMG=golangci/golangci-lint:v1.18.0
+LINT_DKR_IMG=golangci/golangci-lint:v1.40.1
 #LINT_DKR_IMG=golangci/golangci-lint:v1.23-alpine
 GOSEC_VER=v2.2.0
 
@@ -32,10 +32,9 @@ lint:
 		golangci-lint --version; \
 		golangci-lint run ./... --verbose
 docker-lint:
-		docker run --rm -v ${PWD}:/go/src/github.com/vishwanathj/JSON-Parameterized-Data-Validator -w /go/src/github.com/vishwanathj/JSON-Parameterized-Data-Validator $(LINT_DKR_IMG) \
-		sh -c "go get -u github.com/golang/dep/cmd/dep  && dep ensure -v && golangci-lint run -v"
+		docker run --rm -v ${PWD}:/app -w /app $(LINT_DKR_IMG) golangci-lint run -v
 docker-gosec:
-		docker run -it -v ${PWD}:/JSONPDV securego/gosec:$(GOSEC_VER) /JSONPDV/...
+		docker run --rm -it -v ${PWD}:/app securego/gosec:$(GOSEC_VER) /app/...
 gosec:
 		curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s -- -b ~/tmp v2.2.0
 		~/tmp/gosec ./...

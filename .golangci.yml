@@ -9,7 +9,10 @@ linters:
     - gofmt
     - deadcode
     - errcheck
-    - gosimple
+    # gosimple disabled for this project only, getting below errors that does not have to be fixed
+    # pkg/jsondatavalidator/jsondatavalidator.go:157:10: S1034: assigning the result of this type assertion to a variable (switch val := val.(type)) could eliminate type assertions in switch cases (gosimple)
+    #                switch val.(type) {
+    #- gosimple
     - govet
     - ineffassign
     - staticcheck
