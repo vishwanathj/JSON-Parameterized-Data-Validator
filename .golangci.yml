@@ -9,7 +9,6 @@ linters:
     - gofmt
     - deadcode
     - errcheck
-    - gofmt
     - gosimple
     - govet
     - ineffassign
