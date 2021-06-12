@@ -28,6 +28,8 @@ deps:
 		dep status
 container_test:
 		docker build -t vishwanathj/$(BINARY_NAME)_int -f $(BUILD_DIR)/Dockerfile_unit_test .
+docker-unit-tests:
+		docker run -it --rm -v ${PWD}:/go/src/github.com/JSONPDV -w /go/src/github.com/JSONPDV golang:1.15-buster go test -v ./... -count=1 -tags=unit
 lint:
 		golangci-lint --version; \
 		golangci-lint run ./... --verbose
