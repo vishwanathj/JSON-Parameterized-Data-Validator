@@ -57,5 +57,5 @@ jobs:
       run: go test -v ./... -count=1 -tags=unit
 
     - name: ensure running unit tests inside golang docker container passes as well
-        run:
-          make docker-unit-tests
+      run:
+        make docker-unit-tests
