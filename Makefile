@@ -3,7 +3,6 @@
 GOCMD=go
 GOTEST=$(GOCMD) test
 BINARY_NAME=json-data-validator
-BUILD_DIR=build/package
 # change to value of TEST_RESULTS_DIR would need a corresponding change in .circleci/config.yml file
 TEST_RESULTS_DIR=$(HOME)/test_results
 LINT_DKR_IMG=golangci/golangci-lint:v1.40.1
@@ -23,11 +22,6 @@ display_unit_html:
 clean:
 		docker system prune -f
 		rm -rf $(TEST_RESULTS_DIR)
-deps:
-		dep ensure
-		dep status
-container_test:
-		docker build -t vishwanathj/$(BINARY_NAME)_int -f $(BUILD_DIR)/Dockerfile_unit_test .
 docker-unit-tests:
 		docker run --rm -v ${PWD}:/go/src/github.com/JSONPDV -w /go/src/github.com/JSONPDV golang:1.15-buster go test -v ./... -count=1 -tags=unit
 lint:
