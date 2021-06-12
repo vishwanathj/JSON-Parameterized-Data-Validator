@@ -8,7 +8,7 @@ BUILD_DIR=build/package
 TEST_RESULTS_DIR=$(HOME)/test_results
 LINT_DKR_IMG=golangci/golangci-lint:v1.40.1
 #LINT_DKR_IMG=golangci/golangci-lint:v1.23-alpine
-GOSEC_VER=v2.2.0
+GOSEC_VER=v2.8.0
 
 all: deps unit
 unit:
