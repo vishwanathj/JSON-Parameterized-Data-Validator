@@ -72,5 +72,5 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: unit-tests-artifacts
-        path: ${{ UT_RESULTS_DIR }}
+        path: ${{ env.UT_RESULTS_DIR }}
         retention-days: 5
