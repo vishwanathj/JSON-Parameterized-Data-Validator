@@ -76,7 +76,7 @@ jobs:
         path: ${{ env.UT_RESULTS_DIR }}
         retention-days: 5
 
-    - name: Coveralls
-      uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.COVERALLS_SECRET }}
+    #- name: Coveralls
+    #  uses: coverallsapp/github-action@master
+    #  with:
+    #    github-token: ${{ secrets.COVERALLS_SECRET }}
