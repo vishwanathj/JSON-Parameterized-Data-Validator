@@ -4,7 +4,7 @@ GOCMD=go
 GOTEST=$(GOCMD) test
 BINARY_NAME=json-data-validator
 # change to value of TEST_RESULTS_DIR would need a corresponding change in .circleci/config.yml file
-TEST_RESULTS_DIR=./test_results
+TEST_RESULTS_DIR=./coverage
 LINT_DKR_IMG=golangci/golangci-lint:v1.40.1
 #LINT_DKR_IMG=golangci/golangci-lint:v1.23-alpine
 GOSEC_VER=v2.8.0
@@ -14,11 +14,11 @@ unit:
 		mkdir -p $(TEST_RESULTS_DIR)
 		#The idiomatic way to disable test caching explicitly is to use -count=1.
 		#$(GOTEST) -v ./... -count=1 -tags=unit -coverprofile $(TEST_RESULTS_DIR)/coverage_unit.out &> $(TEST_RESULTS_DIR)/dbg_unit.out
-		$(GOTEST) -v ./... -count=1 -tags=unit -coverprofile $(TEST_RESULTS_DIR)/coverage_unit.out
-		go tool cover -html=$(TEST_RESULTS_DIR)/coverage_unit.out -o $(TEST_RESULTS_DIR)/coverage_unit.html
-		go tool cover -func=$(TEST_RESULTS_DIR)/coverage_unit.out -o $(TEST_RESULTS_DIR)/func_coverage.out
+		$(GOTEST) -v ./... -count=1 -tags=unit -coverprofile $(TEST_RESULTS_DIR)/lcov.info
+		go tool cover -html=$(TEST_RESULTS_DIR)/lcov.info -o $(TEST_RESULTS_DIR)/coverage_unit.html
+		go tool cover -func=$(TEST_RESULTS_DIR)/lcov.info -o $(TEST_RESULTS_DIR)/func_coverage.out
 display_unit_html:
-		go tool cover -html=$(TEST_RESULTS_DIR)/coverage_unit.out
+		go tool cover -html=$(TEST_RESULTS_DIR)/lcov.info
 clean:
 		docker system prune -f
 		rm -rf $(TEST_RESULTS_DIR)
