@@ -10,7 +10,7 @@ env:
   GOLANGCI_VER: v1.40.1
   GO_VER: 1.15
   GO_SEC_VER: v2.8.0
-  UT_RESULTS_DIR: test_results
+  UT_RESULTS_DIR: coverage
   LCOV_FILE: coverage_unit.out
 
 jobs:
