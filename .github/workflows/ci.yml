@@ -11,6 +11,7 @@ env:
   GO_VER: 1.15
   GO_SEC_VER: v2.8.0
   UT_RESULTS_DIR: test_results
+  LCOV_FILE: coverage_unit.out
 
 jobs:
 
@@ -77,5 +78,6 @@ jobs:
 
     - name: Coveralls
       uses: coverallsapp/github-action@master
+      path-to-lcov: ${{ env.UT_RESULTS_DIR }}/${{ LCOV_FILE }}
       with:
         github-token: ${{ secrets.COVERALLS_SECRET }}
