@@ -78,6 +78,5 @@ jobs:
 
     - name: Coveralls
       uses: coverallsapp/github-action@master
-      path-to-lcov: ${{ env.UT_RESULTS_DIR }}/${{ LCOV_FILE }}
       with:
         github-token: ${{ secrets.COVERALLS_SECRET }}
