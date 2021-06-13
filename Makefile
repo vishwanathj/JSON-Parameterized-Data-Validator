@@ -4,12 +4,12 @@ GOCMD=go
 GOTEST=$(GOCMD) test
 BINARY_NAME=json-data-validator
 # change to value of TEST_RESULTS_DIR would need a corresponding change in .circleci/config.yml file
-TEST_RESULTS_DIR=$(HOME)/test_results
+TEST_RESULTS_DIR=./test_results
 LINT_DKR_IMG=golangci/golangci-lint:v1.40.1
 #LINT_DKR_IMG=golangci/golangci-lint:v1.23-alpine
 GOSEC_VER=v2.8.0
 
-all: deps unit
+all: unit
 unit:
 		mkdir -p $(TEST_RESULTS_DIR)
 		#The idiomatic way to disable test caching explicitly is to use -count=1.
@@ -23,7 +23,8 @@ clean:
 		docker system prune -f
 		rm -rf $(TEST_RESULTS_DIR)
 docker-unit-tests:
-		docker run --rm -v ${PWD}:/go/src/github.com/JSONPDV -w /go/src/github.com/JSONPDV golang:1.15-buster go test -v ./... -count=1 -tags=unit
+		#docker run --rm -v ${PWD}:/go/src/github.com/JSONPDV -w /go/src/github.com/JSONPDV golang:1.15-buster go test -v ./... -count=1 -tags=unit
+		docker run --rm -v ${PWD}:/go/src/github.com/JSONPDV -w /go/src/github.com/JSONPDV golang:1.15-buster make unit
 lint:
 		golangci-lint --version; \
 		golangci-lint run ./... --verbose

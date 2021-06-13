@@ -10,6 +10,7 @@ env:
   GOLANGCI_VER: v1.40.1
   GO_VER: 1.15
   GO_SEC_VER: v2.8.0
+  UT_RESULTS_DIR: test_results
 
 jobs:
 
@@ -67,3 +68,9 @@ jobs:
     - name: ensure running unit tests inside golang docker container passes as well
       run:
         make docker-unit-tests
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: unit-tests-artifacts
+        path: ${{ UT_RESULTS_DIR }}
+        retention-days: 5
